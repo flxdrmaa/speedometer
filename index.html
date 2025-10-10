@@ -45,20 +45,20 @@
 
         <div class="inGameHud" v-if="show"> <!-- v-if="show" -->
             <div class="money_block bank">
-                <img src="/images/hud/new/bank.png" alt=""> {{bank}} $
+                <img src="images/hud/new/bank.png" alt=""> {{bank}} $
             </div>
             <div class="money_block cash">
-                <img src="/images/hud/new/cash.png" alt=""> {{money}} $
+                <img src="images/hud/new/cash.png" alt=""> {{money}} $
             </div>
 
             <div class="gunshud" v-if="ammo"> <!-- v-if="ammo" -->
                 <div class="money_block bullet">
-                    <img src="/images/hud/new/bullet.png" alt=""> <div class="count"><b>{{ammo}}</b></div>
+                    <img src="images/hud/new/bullet.png" alt=""> <div class="count"><b>{{ammo}}</b></div>
                 </div>
             </div>
 
-            <img v-if="mic" id="microsound" src="/images/hud/new/micro.png" alt="" class="micro enabled">
-            <img v-else id="microsound" src="/images/hud/new/micro.png" alt="" class="micro">
+            <img v-if="mic" id="microsound" src="images/hud/new/micro.png" alt="" class="micro enabled">
+            <img v-else id="microsound" src="images/hud/new/micro.png" alt="" class="micro">
 
             <div class="speedometer" :style="{ opacity: inVeh ? 1 : 0 }">
                 <svg  xmlns="http://www.w3.org/2000/svg"  viewBox="15 0 167 167" :data-value="speed" class="speed">
@@ -78,18 +78,18 @@
                     <div class="type">км/ч</div>
                     
                 </div>
-                <img src="./images/hud/new/fuel.png" alt="" class="icon_fuel">
+                <img src="images/hud/new/fuel.png" alt="" class="icon_fuel">
                 <div class="lamp_list">
-                    <img v-if="belt" src="cef/images/hud/new/sec_yes.png" alt="" class="sec">
-                    <img v-else src="cef/images/hud/new/sec_no.png" alt="" class="sec">
+                    <img v-if="belt" src="images/hud/new/sec_yes.png" alt="" class="sec">
+                    <img v-else src="images/hud/new/sec_no.png" alt="" class="sec">
 
-                    <img v-if="doors" src="cef/images/hud/new/door_yes.png" alt="" class="door">
-                    <img v-else src=".cef/images/hud/new/door_no.png" alt="" class="door">
+                    <img v-if="doors" src="images/hud/new/door_yes.png" alt="" class="door">
+                    <img v-else src="images/hud/new/door_no.png" alt="" class="door">
 
-                    <img v-if="engine" src="cef/images/hud/new/engine_yes.png" alt="" class="engine">
-                    <img v-else src="cef/images/hud/new/engine_no.png" alt="" class="engine">
+                    <img v-if="engine" src="images/hud/new/engine_yes.png" alt="" class="engine">
+                    <img v-else src="images/hud/new/engine_no.png" alt="" class="engine">
 
-                    <img src="./images/hud/new/lamp_no.png" alt="" class="lamp">
+                    <img src="images/hud/new/lamp_no.png" alt="" class="lamp">
                 </div>
             </div>
 			
@@ -114,14 +114,14 @@
         </div>
 		
 		<div class="logobox" v-if="show">
-			<img src="/images/hud/new/bg_logo.png" alt="" class="logo_bg">
-			<img src="/images/hud/new/logo.png" class="logo_img" alt="">
+			<img src="images/hud/new/bg_logo.png" alt="" class="logo_bg">
+			<img src="images/hud/new/logo.png" class="logo_img" alt="">
 			<div class="name_server">
 				Phoenix <br> Role Play
 			</div>
 			<div class="info_bar">
 				<div class="line">
-					<img src="/images/hud/new/clock.png" alt="">
+					<img src="images/hud/new/clock.png" alt="">
 					<div class="info">
 						<b>{{time}}</b>
 						{{date}}
