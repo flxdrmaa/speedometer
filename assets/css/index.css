@@ -6,8 +6,10 @@
 }
 body {
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.562);
+  background: #f9f9f9; /* atau #ffffff untuk putih polos */
+  color: #000;
 }
+
 .animateOpacityOn {
   opacity: 0;
   animation: open 1s;
