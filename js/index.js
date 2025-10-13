@@ -46,7 +46,7 @@ function setSpeed(speed) {
 
 /* ----------------------------- FUEL ----------------------------- */
 function updateFuelMeter(level, maxLevel = 100) {
-  const path = document.querySelector('.fuel path') || null;
+  const path = document.querySelector('.fuel path');
   if (!path) return;
 
   const total = path.getTotalLength() || 340;
@@ -55,14 +55,11 @@ function updateFuelMeter(level, maxLevel = 100) {
 
   path.style.strokeDashoffset = offset;
 
-  // Ganti warna jika bahan bakar rendah
-  if (clamped <= maxLevel * 0.15) {
-    path.setAttribute("stroke", "#FFCC00");
-  } else {
-    path.setAttribute("stroke", "#F43E5F");
-  }
+  // ubah warna jika fuel rendah
+  path.setAttribute("stroke", clamped <= 15 ? "#FFCC00" : "#F43E5F");
 }
 
+let currentFuel = 0;
 function animateFuelTo(targetLevel, duration = 300, maxLevel = 100) {
   const startLevel = currentFuel;
   const change = targetLevel - startLevel;
@@ -79,8 +76,11 @@ function animateFuelTo(targetLevel, duration = 300, maxLevel = 100) {
 }
 
 function setFuel(fuel) {
-  animateFuelTo(fuel * 100, 400, 100);
+  // support input 0–1 atau 0–100
+  const value = fuel <= 1 ? fuel * 100 : fuel;
+  animateFuelTo(value, 400, 100);
 }
+
 
 /* ----------------------------- ENGINE HEALTH ----------------------------- */
 function updateEngineMeter(level, maxLevel = 100) {
