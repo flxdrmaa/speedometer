@@ -46,18 +46,18 @@ function setSpeed(speed) {
 
 /* ----------------------------- FUEL ----------------------------- */
 function updateFuelMeter(level, maxLevel = 100) {
-  const path = document.querySelector('.fuel path');
+  const path = document.querySelector('.fuel path[stroke="#F43E5F"]');
   if (!path) return;
 
-  const total = path.getTotalLength() || 340;
+  const total = 340; // panjang path dari SVG fuel
   const clamped = Math.max(0, Math.min(level, maxLevel));
   const offset = total - (total * clamped) / maxLevel;
-
   path.style.strokeDashoffset = offset;
 
-  // ubah warna jika fuel rendah
+  // warna dinamis
   path.setAttribute("stroke", clamped <= 15 ? "#FFCC00" : "#F43E5F");
 }
+
 
 let currentFuel = 0;
 function animateFuelTo(targetLevel, duration = 300, maxLevel = 100) {
