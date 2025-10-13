@@ -1,4 +1,4 @@
-/* RESET DASAR */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -8,24 +8,22 @@
 
 body {
   overflow: hidden;
-  background: #ffffff; /* latar belakang terang */
+  background: #ffffff; /* putih bersih */
   color: #111;
   font-family: 'ProximaNova', sans-serif;
 }
 
-/* ANIMASI HALUS */
+/* ANIMASI */
 .animateOpacityOn {
   opacity: 0;
   animation: open 1s ease forwards;
 }
 
 @keyframes open {
-  100% {
-    opacity: 1;
-  }
+  to { opacity: 1; }
 }
 
-/* POSISI DAN SKALA HUD */
+/* HUD */
 .car-hud {
   position: absolute;
   right: 1vw;
@@ -33,117 +31,106 @@ body {
   width: 18vw;
   text-align: center;
   transform: scale(0.86);
-  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 0 8px rgba(0,0,0,0.4));
 }
 
-/* ===== SPEEDOMETER RING ===== */
-.car-hud .speed {
+/* ===== SPEEDOMETER ===== */
+.speed {
   width: 15.5vw;
   height: 15.5vw;
-  display: inline-block;
 }
 
-.car-hud .speed path {
-  stroke: #00b7ff; /* biru neon */
+.speed path {
   stroke-width: 8px;
   fill: none;
-  stroke-dasharray: 838;
-  stroke-dashoffset: 838;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s linear, stroke 0.3s ease;
 }
 
-/* ===== ENGINE BAR ===== */
-.car-hud .engine {
+/* dasar abu-abu */
+.speed path[stroke-opacity] {
+  stroke: #ccc;
+}
+
+/* jarum aktif */
+.speed path[stroke="url(#paint222_linear)"] {
+  stroke-dasharray: 838;
+  stroke-dashoffset: 838;
+  stroke: url(#paint222_linear);
+}
+
+/* ===== ENGINE ===== */
+.engine {
   width: 3.5vw;
   height: 17.7vw;
   margin: 0 -2.3vw;
-  transform: rotate(0deg);
 }
 
-.car-hud .engine path {
-  stroke: #ffffff;
-  stroke-width: 6px;
-  fill: none;
+.engine path[stroke="white"] {
   stroke-dasharray: 345;
   stroke-dashoffset: 345;
+  stroke: #222;
   transition: stroke-dashoffset 0.3s linear, stroke 0.3s ease;
 }
 
-/* ===== FUEL BAR ===== */
-.car-hud .fuel {
+/* ===== FUEL ===== */
+.fuel {
   width: 3.5vw;
   height: 17.7vw;
   margin: 0 -2.3vw;
   transform: rotate(161deg);
 }
 
-.car-hud .fuel path {
-  stroke: #ff416c; /* merah muda neon */
+.fuel path[stroke="#F43E5F"] {
+  stroke: #F43E5F;
   stroke-width: 6px;
   fill: none;
-  stroke-dasharray: 340;
-  stroke-dashoffset: 340;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.3s linear, stroke 0.3s ease, stroke 0.4s;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340; /* <– offset sesuai panjang path */
+  transition: stroke-dashoffset 0.4s linear, stroke 0.4s ease;
 }
 
-/* ===== INFO KECEPATAN DAN TEKS ===== */
-.car-hud .speed-info {
+/* ===== SPEED INFO ===== */
+.speed-info {
   margin: 0 0 -12.5vw 0;
   font-weight: 600;
-  color: #222;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
-}
-
-.car-hud .speed-info .info {
-  line-height: 1.8vw;
-}
-
-.car-hud .speed-info .info p:first-child {
-  font-size: 1.5vw;
   color: #000;
+  text-shadow: 0 0 6px rgba(255,255,255,0.8);
 }
 
-.car-hud .speed-info .info p:last-child {
+.speed-info .info p:first-child {
+  font-size: 1.5vw;
+}
+
+.speed-info .info p:last-child {
   font-size: 0.8vw;
   opacity: 0.6;
 }
 
-/* ===== BULB INDIKATOR ===== */
-.car-hud .speed-info .info-car {
+/* ===== INDIKATOR ===== */
+.info-car {
   display: flex;
   justify-content: center;
 }
 
-.car-hud .speed-info .info-car .bulb {
+.bulb {
   margin: 0 0.5vw;
 }
 
-.car-hud .speed-info .info-car .bulb svg {
+.bulb svg {
   width: 1.3vw;
   height: 1.6vw;
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
 }
 
-.car-hud .speed-info .info-car .bulb:first-child .active path {
-  fill: rgb(0, 230, 0);
-}
+.bulb:first-child .active path { fill: rgb(0,230,0); }
+.bulb:first-child .highBeam path { fill: rgb(25,0,255); }
+.bulb:nth-child(2) .active path { fill: rgb(255,0,0); }
+.bulb:last-child .active path { fill: rgb(255,153,0); }
 
-.car-hud .speed-info .info-car .bulb:first-child .highBeam path {
-  fill: rgb(25, 0, 255);
-}
-
-.car-hud .speed-info .info-car .bulb:nth-child(2) .active path {
-  fill: rgb(255, 0, 0);
-}
-
-.car-hud .speed-info .info-car .bulb:last-child .active path {
-  fill: rgb(255, 153, 0);
-}
-
-/* ===== ICON ENGINE & FUEL ===== */
-.car-hud .engine-icon {
+/* ===== ICONS ===== */
+.engine-icon {
   width: 1.6vw;
   height: 1.6vw;
   position: absolute;
@@ -151,7 +138,7 @@ body {
   left: 1.2vw;
 }
 
-.car-hud .fuel-icon {
+.fuel-icon {
   width: 1.8vw;
   height: 1.8vw;
   position: absolute;
@@ -159,9 +146,6 @@ body {
   right: 1vw;
 }
 
-/* ===== BONUS: SMOOTH HOVER & RESPONSIVE ===== */
 @media (max-width: 1280px) {
-  .car-hud {
-    transform: scale(0.9);
-  }
+  .car-hud { transform: scale(0.9); }
 }
