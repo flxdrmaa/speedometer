@@ -54,7 +54,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px; /* Sedikit mengurangi gap agar lebih rapat */
+  gap: 4px;
   height: 100%;
   justify-content: center;
 }
@@ -87,7 +87,6 @@ body {
   transition: transform 0.4s ease-out;
 }
 
-/* --- STYLE BARU UNTUK PERSENTASE DI BAWAH BAR --- */
 .bar-percentage {
   font-family: 'DS-Digital', sans-serif;
   font-size: 14px;
@@ -120,9 +119,10 @@ body {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
+/* --- PERUBAHAN DI SINI --- */
 .gear-display {
   font-family: 'DS-Digital', sans-serif;
-  font-size: 40px;
+  font-size: 28px; /* Ukuran font diperkecil lagi */
   font-weight: normal;
   color: var(--glow);
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
