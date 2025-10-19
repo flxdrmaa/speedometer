@@ -1,53 +1,59 @@
-﻿<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>NA</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="css/speed_icon.css">
-	<link rel="stylesheet" href="css/speedometer.css">
-	<link rel="stylesheet" href="css/hud_data.css">
-	<link rel="stylesheet" href="css/other.css">
-    <title>NA_dev</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speedometer Final</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body style="background-color: #0009;">
-<div class="hud-right-bot">
-	<div class="hud-speedometer">
-	<svg id="test" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="27.5vh" height="22.4vh" viewBox="-4 -10 275 214" preserveAspectRatio="xMaxYMin meet">
-	<path fill-rule="evenodd" stroke="rgb(255, 255, 255)" stroke-width="0.6vh" stroke-linecap="butt" stroke-linejoin="miter" opacity="0.4" fill="none" d="M17.319,170.926 C-0.528,135.060 -1.246,92.839 15.164,56.462 "></path>
-	<path id="hud-engine" fill-rule="evenodd" stroke="rgb(255, 255, 255)" stroke-width="1vh" stroke-linecap="butt" stroke-linejoin="miter" opacity="1" fill="none" d="M17.319,170.926 C-0.528,135.060 -1.246,92.839 15.164,56.462 " style="stroke-dasharray: 118.296, 118.296; stroke-dashoffset: 118.289;"></path>
-	<path fill-rule="evenodd" stroke="rgb(255, 255, 255)" stroke-width="0.6vh" stroke-linecap="butt" stroke-linejoin="miter" opacity="0.4" fill="none" d="M224.989,204.006 C276.978,152.089 276.978,67.914 224.989,15.997"></path>
-	<path id="hud-fuel" fill-rule="evenodd" stroke="#fa6f71" stroke-width="1vh" stroke-linecap="butt" stroke-linejoin="miter" opacity="1" fill="none" d="M224.989,204.006 C276.978,152.089 276.978,67.914 224.989,15.997 " style="stroke-dasharray: 208.907, 208.907; stroke-dashoffset: 208.896;"></path>
-	<path fill-rule="evenodd" stroke="rgb(255, 255, 255)" stroke-width="0.6vh" stroke-linecap="butt" stroke-linejoin="miter" opacity="0.4" fill="none" d="M60.340,185.660 C18.553,143.874 18.553,76.126 60.340,34.340 C102.126,-7.447 169.874,-7.447 211.660,34.340 C253.446,76.126 253.446,143.874 211.660,185.660 "></path>
-	<path id="hud-speedometer" fill-rule="evenodd" stroke="rgb(255, 232, 19)" stroke-width="1vh" stroke-linecap="butt" stroke-linejoin="miter" opacity="1" fill="none" d="M60.340,185.660 C18.553,143.874 18.553,76.126 60.340,34.340 C102.126,-7.447 169.874,-7.447 211.660,34.340 C253.446,76.126 253.446,143.874 211.660,185.660 " style="stroke-dasharray: 504.295, 504.295; stroke-dashoffset: 504.267;"></path>
-	</svg> 
-	<div class="hud-speed-text">
-	<div>
-	<span id="textspeed"></span>
-	</div>
-	<p>км/ч</p>
-	</div>
-	<div class="hud-engine-text" id="healproc"></div>
-	<i class="hud-engine-ico"></i>
-	</div>
-</div>
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/minimalspeed.js"></script>
-	<script src="https://kit.fontawesome.com/c552bfdf6a.js" crossorigin="anonymous"></script>
+<body>
+  <main class="speedo-root">
+    <!-- Left Bars -->
+    <div class="left-bars">
+      <div class="bar health">
+        <div class="bar-fill" id="health-bar"></div>
+      </div>
+      <div class="bar fuel">
+        <div class="bar-fill" id="fuel-bar"></div>
+      </div>
+    </div>
 
-<script>
-function updateSpeed(speed, fuel, health) {
-    if (document.getElementById("textspeed")) {
-        document.getElementById("textspeed").innerText = speed;
-    }
-    if (document.getElementById("hud-fuel")) {
-        document.getElementById("hud-fuel").style.strokeDasharray = 200 + (fuel / 10);
-    }
-    if (document.getElementById("hud-health")) {
-        document.getElementById("hud-health").style.strokeDasharray = 118 + (health / 10);
-    }
-}
-</script>
+    <!-- Percent labels -->
+    <div class="bar-percent-container">
+      <span id="health-percent">100%</span>
+      <span id="fuel-percent">100%</span>
+    </div>
 
+    <!-- Center Panel -->
+    <div class="center-panel">
+      <div class="speed-display" id="speed-display">000</div>
+      <div class="speed-unit" id="speed-unit">KMH</div>
+      <div class="rpm-container">
+        <div id="rpm-boxes"></div>
+      </div>
+    </div>
+
+    <!-- Right Icons -->
+    <div class="right-icons">
+      <div class="icon" id="icon-engine" title="Engine">
+        <svg viewBox="0 0 24 24"><path d="M4 9v6h2v2h3v2h6v-2h3v-2h2V9h-2V7h-3V5H9v2H6v2H4z"/></svg>
+      </div>
+      <div class="icon" id="icon-lights" title="Headlights">
+        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 8-8h1v16h-1a8 8 0 0 1-8-8zm14-7v2h2V5h-2zm0 4v2h4V9h-4zm0 4v2h3v-2h-3zm0 4v2h2v-2h-2z"/></svg>
+      </div>
+      <div class="icon" id="icon-seatbelt" title="Seatbelt">
+        <svg viewBox="0 0 24 24"><path d="M7 2l1.5 3L6 8h3l2-3h2l2 3h3l-2.5-3L17 2H7zm3 10l-4 8h3l3-6 3 6h3l-4-8h-4z"/></svg>
+      </div>
+      <div class="indicators">
+        <div class="icon indicator" id="icon-left" title="Left Signal">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6v12z"/></svg>
+        </div>
+        <div class="icon indicator" id="icon-right" title="Right Signal">
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6V6z"/></svg>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>
