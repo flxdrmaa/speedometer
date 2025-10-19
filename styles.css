@@ -162,26 +162,44 @@ body {
   margin-top: 12px;
 }
 
-.icon svg {
-  width: 22px; /* Disesuaikan */
-  height: 22px;
-  fill: var(--off);
-  transition: fill 0.3s, filter 0.3s;
+/* --- ATURAN IKON BARU --- */
+.icon img {
+  width: 24px;   /* Ukuran ikon diseragamkan */
+  height: 24px;
+  object-fit: contain; /* Menjaga aspek rasio gambar */
+  transition: filter 0.3s;
+  
+  /* State "off" menggunakan filter: ikon dibuat putih dan transparan */
+  filter: brightness(0) invert(1) opacity(0.25);
 }
 
-.icon.active svg {
-  fill: var(--glow);
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+/* Membalik ikon sein kanan */
+#icon-right img {
+  transform: scaleX(-1);
 }
 
-.icon.indicator.active#icon-engine svg,
-.icon.indicator.active#icon-seatbelt svg {
-    fill: #ffcc00;
-    filter: drop-shadow(0 0 8px #ffcc00);
+/* State "active" default untuk lampu utama */
+.icon.active#icon-lights img {
+  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
 }
 
-.icon.indicator.active#icon-left svg,
-.icon.indicator.active#icon-right svg {
-    fill: #00ff00;
-    filter: drop-shadow(0 0 8px #00ff00);
+/* State "active" untuk engine dan seatbelt (warna kuning) */
+.icon.indicator.active#icon-engine img,
+.icon.indicator.active#icon-seatbelt img {
+    filter: invert(89%) sepia(31%) saturate(2378%) hue-rotate(331deg) brightness(107%) contrast(101%) drop-shadow(0 0 8px #ffcc00);
+}
+
+/* State "active" untuk sein (warna hijau) */
+.icon.indicator.active#icon-left img,
+.icon.indicator.active#icon-right img {
+    filter: invert(59%) sepia(93%) saturate(732%) hue-rotate(85deg) brightness(115%) contrast(101%) drop-shadow(0 0 8px #00ff00);
+    animation: blinker 1s linear infinite;
+}
+/* --- AKHIR ATURAN IKON BARU --- */
+
+/* Animasi Kedip */
+@keyframes blinker {  
+  50% {
+    opacity: 0.2;
+  }
 }
