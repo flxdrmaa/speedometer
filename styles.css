@@ -20,7 +20,7 @@ body {
   color: white;
 }
 
-/* Main container - MENGGUNAKAN vmin UNTUK UKURAN RESPONSIF */
+/* Main container - MENGGUNAKAN vmin DAN aspect-ratio UNTUK UKURAN RESPONSIF */
 .speedo-root {
   position: fixed;
   right: 2vmin;
@@ -28,16 +28,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Ukuran utama menggunakan vmin untuk skala dasar */
+  width: 25vmin;
+  /* Menggunakan aspect-ratio untuk menjaga proporsi tetap (misal 3:2) */
+  aspect-ratio: 3 / 2;
   
-  /* Ukuran utama menggunakan vmin */
-  width: 24vmin;
-  height: 16vmin;
-  
-  /* Batasan agar tidak terlalu kecil atau besar */
-  min-width: 240px;
-  min-height: 150px;
-  max-width: 350px;
-  max-height: 230px;
+  /* Batasan ukuran menggunakan vmin agar tetap responsif */
+  min-width: 240px; /* Batas minimum bisa tetap dalam px jika diperlukan */
+  max-width: 450px; /* Batas maksimum bisa diperbesar atau disesuaikan */
 
   gap: 1.2vmin;
   padding: 1.2vmin;
@@ -69,9 +68,9 @@ body {
 }
 
 .bar {
-  width: 1.3vmin;
-  height: 9.5vmin;
-  border-radius: 0.6vmin;
+  width: 1.5vmin;
+  height: 12vmin;
+  border-radius: 0.7vmin;
   background: rgba(0, 0, 0, 0.3);
   overflow: hidden;
   display: flex;
@@ -86,13 +85,11 @@ body {
   transition: transform 0.4s ease-out;
 }
 
-/* Menggunakan clamp() untuk font agar ada batas min/max */
 .bar-percent {
-  font-size: clamp(9px, 1vmin, 12px);
+  font-size: clamp(10px, 1.2vmin, 16px);
   font-weight: bold;
   color: rgba(255, 255, 255, 0.9);
 }
-
 
 /* Center Panel */
 .center-panel {
@@ -106,8 +103,7 @@ body {
 
 .speed-display {
   font-family: 'DS-Digital', sans-serif;
-  /* Font size responsif dengan batasan */
-  font-size: clamp(50px, 6.5vmin, 80px);
+  font-size: clamp(50px, 8vmin, 100px);
   font-weight: normal;
   line-height: 0.9;
   color: var(--glow);
@@ -115,7 +111,7 @@ body {
 }
 
 .speed-unit {
-  font-size: clamp(10px, 1.2vmin, 16px);
+  font-size: clamp(12px, 1.8vmin, 20px);
   font-weight: bold;
   opacity: 0.8;
   letter-spacing: 0.1vmin;
@@ -131,13 +127,14 @@ body {
 #rpm-boxes {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  gap: 0.3vmin;
-  width: 15vmin;
+  gap: 0.4vmin;
+  width: 100%;
+  max-width: 18vmin;
 }
 
 .rpm-box {
   width: 100%;
-  height: 0.7vmin;
+  height: 0.8vmin;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 0.2vmin;
   transition: all 0.2s;
@@ -151,13 +148,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.2vmin;
+  gap: 1.5vmin;
   margin-top: 1.2vmin;
 }
 
 .icon svg {
-  width: 2.1vmin;
-  height: 2.1vmin;
+  width: 2.5vmin;
+  height: 2.5vmin;
   fill: var(--off);
   transition: fill 0.3s, filter 0.3s;
 }
@@ -181,4 +178,31 @@ body {
 
 /* Warna health dan fuel tetap sama */
 .bar.health .bar-fill { background: var(--health-color); }
-.bar.fuel .bar-fill { background: var(--fuel-color); }
+.bar.fuel .bar-fill { background: var(--fuel-color); }```
+
+### Penjelasan Perubahan dan Peningkatan
+
+1.  **Penggunaan `aspect-ratio` pada Kontainer Utama**:
+    *   **Masalah**: Kontainer utama (`.speedo-root`) menggunakan `width` dan `height` yang keduanya berbasis `vmin`. Meskipun ini membantu skala, rasio antara lebar dan tinggi dapat sedikit berubah tergantung pada bentuk viewport (apakah lebih persegi atau lebih lebar).
+    *   **Solusi**: Dengan menetapkan `width: 25vmin;` dan menambahkan `aspect-ratio: 3 / 2;`, kita secara eksplisit memberitahu browser untuk selalu menjaga proporsi lebar dan tinggi. Ini adalah cara paling efektif untuk memastikan bentuk elemen tetap sama di semua resolusi. Anda dapat menyesuaikan rasio `3 / 2` sesuai dengan desain yang Anda inginkan. Properti `height` tidak lagi diperlukan karena akan dihitung secara otomatis.
+
+2.  **Menghapus Batasan Kaku (`min/max-height`)**:
+    *   **Masalah**: `min-height` dan `max-height` dalam piksel secara langsung mengganggu penskalaan proporsional yang coba dicapai oleh `aspect-ratio` dan `vmin`.
+    *   **Solusi**: Properti-properti ini telah dihapus. `min-width` dan `max-width` dapat dipertahankan untuk mencegah elemen menjadi terlalu kecil atau terlalu besar, tetapi nilainya mungkin perlu disesuaikan agar lebih fleksibel.
+
+3.  **Konsistensi Penggunaan `vmin`**:
+    *   **Masalah**: Beberapa nilai seperti `width` dan `height` pada elemen anak (`.bar`, `#rpm-boxes`, `.icon svg`) sudah menggunakan `vmin`, yang merupakan praktik yang baik.
+    *   **Solusi**: Kode yang diperbaiki memastikan bahwa hampir semua unit yang berhubungan dengan ukuran dan spasi (`gap`, `padding`, `border-radius`, dll.) menggunakan `vmin`. Ini membuat seluruh komponen menyusut dan membesar secara harmonis. Nilai-nilai ini sedikit disesuaikan untuk skala yang lebih baik.
+
+4.  **Penyempurnaan `clamp()` untuk Font**:
+    *   **Masalah**: `clamp()` adalah alat yang hebat, tetapi nilai-nilainya harus selaras dengan skala keseluruhan.
+    *   **Solusi**: Nilai di dalam `clamp()` untuk `.speed-display` dan `.speed-unit` telah disesuaikan. Nilai tengah (nilai pilihan) kini menggunakan `vmin` (`8vmin` dan `1.8vmin`) untuk memastikan ukuran teks diskalakan bersama dengan ukuran kontainer. Nilai minimum dan maksimum (dalam `px`) berfungsi sebagai penjaga agar teks tidak menjadi terlalu kecil atau terlalu besar secara ekstrem.
+
+### Cara Menguji Responsivitas
+
+Untuk melihat bagaimana kode yang diperbarui ini bekerja, Anda dapat menggunakan alat pengembang di browser Anda (biasanya diakses dengan menekan F12):
+
+*   **Aktifkan Mode Desain Responsif**: Di alat pengembang, cari ikon yang terlihat seperti ponsel dan tablet. Ini akan memungkinkan Anda untuk secara manual mengubah ukuran viewport dengan menyeret tepinya.
+*   **Amati Penskalaan**: Saat Anda menyeret viewport, perhatikan bagaimana seluruh elemen speedometer—termasuk teks, ikon, dan bar—mengubah ukurannya secara proporsional sambil mempertahankan bentuk dan tata letak yang sama.
+
+Dengan menerapkan perubahan ini, Anda akan mendapatkan komponen speedometer yang benar-benar responsif dan terlihat konsisten, baik pada layar seluler kecil, tablet, maupun monitor desktop beresolusi tinggi seperti FHD.
