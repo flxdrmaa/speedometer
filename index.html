@@ -27,7 +27,12 @@
 
     <!-- Center Panel -->
     <div class="center-panel">
-      <div class="speed-display" id="speed-display">0</div>
+      <!-- Kontainer baru untuk Speed dan Gear -->
+      <div class="speed-container">
+        <div class="speed-display" id="speed-display">0</div>
+        <!-- ELEMEN GEAR BARU -->
+        <div class="gear-display" id="gear-display">N</div>
+      </div>
       <div class="speed-unit" id="speed-unit">MPH</div> 
       <div class="rpm-container">
         <div id="rpm-boxes"></div>
@@ -39,11 +44,8 @@
         <div class="icon indicator" id="icon-engine" title="Engine">
           <img src="https://img.icons8.com/ios/50/engine.png" alt="engine"/>
         </div>
-        <!-- KONTENER IKON LAMPU DENGAN DUA GAMBAR -->
         <div class="icon indicator" id="icon-lights" title="Headlights">
-          <!-- Ikon Lampu Dekat -->
           <img src="https://img.icons8.com/external-those-icons-lineal-those-icons/24/external-lights-cars-components-those-icons-lineal-those-icons-1.png" alt="Low Beam" class="low-beam-icon"/>
-          <!-- Ikon Lampu Jauh -->
           <img src="https://img.icons8.com/external-those-icons-lineal-those-icons/24/external-lights-cars-components-those-icons-lineal-those-icons.png" alt="High Beam" class="high-beam-icon"/>
         </div>
         <div class="icon indicator" id="icon-seatbelt" title="Seatbelt">
