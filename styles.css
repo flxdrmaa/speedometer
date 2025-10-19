@@ -6,7 +6,8 @@
   --health-color: rgba(0, 255, 0, 0.8);
   --fuel-color: rgba(255, 165, 0, 0.8);
   --high-beam-color: #00aeff;
-  --reverse-color: #ff3d3d; /* Warna merah untuk gear mundur */
+  --reverse-color: #ff3d3d;
+  --active-blue-color: #00aeff;
 }
 
 * {
@@ -53,13 +54,20 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px; /* Sedikit mengurangi gap agar lebih rapat */
   height: 100%;
   justify-content: center;
 }
 
+.bar-label {
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--off);
+  text-transform: uppercase;
+}
+
 .bar {
-  width: 14px;
+  width: 16px;
   height: 100px;
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.3);
@@ -79,10 +87,13 @@ body {
   transition: transform 0.4s ease-out;
 }
 
-.bar-icon {
-  width: 22px;
-  height: 22px;
-  filter: brightness(0) invert(1) opacity(0.7); 
+/* --- STYLE BARU UNTUK PERSENTASE DI BAWAH BAR --- */
+.bar-percentage {
+  font-family: 'DS-Digital', sans-serif;
+  font-size: 14px;
+  color: var(--glow);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  font-weight: normal;
 }
 
 .center-panel {
@@ -94,10 +105,9 @@ body {
   height: 100%;
 }
 
-/* KONTENER BARU UNTUK SPEED DAN GEAR */
 .speed-container {
   display: flex;
-  align-items: baseline; /* Sejajarkan di bagian bawah teks */
+  align-items: baseline;
   gap: 8px;
 }
 
@@ -110,7 +120,6 @@ body {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
-/* STYLE UNTUK GEAR DISPLAY */
 .gear-display {
   font-family: 'DS-Digital', sans-serif;
   font-size: 40px;
@@ -120,19 +129,17 @@ body {
   transition: color 0.3s, text-shadow 0.3s;
 }
 
-/* Style khusus saat gear mundur */
 .gear-display.gear-reverse {
   color: var(--reverse-color);
   text-shadow: 0 0 10px var(--reverse-color);
 }
-
 
 .speed-unit {
   font-size: 12px;
   font-weight: bold;
   opacity: 0.8;
   letter-spacing: 1px;
-  margin-top: -4px; /* Sesuaikan posisi unit */
+  margin-top: -4px;
 }
 
 .rpm-container { margin-top: 10px; }
@@ -184,13 +191,14 @@ body {
 }
 
 .icon.active#icon-engine img,
-.icon.active#icon-seatbelt img {
-    filter: invert(89%) sepia(31%) saturate(2378%) hue-rotate(331deg) brightness(107%) contrast(101%) drop-shadow(0 0 8px #ffcc00);
+.icon.active#icon-seatbelt img,
+.icon.active#icon-left img,
+.icon.active#icon-right img {
+    filter: invert(65%) sepia(85%) saturate(1519%) hue-rotate(170deg) brightness(101%) contrast(101%) drop-shadow(0 0 8px var(--active-blue-color));
 }
 
 .icon.active#icon-left img,
 .icon.active#icon-right img {
-    filter: invert(59%) sepia(93%) saturate(732%) hue-rotate(85deg) brightness(115%) contrast(101%) drop-shadow(0 0 8px #00ff00);
     animation: blinker 1s linear infinite;
 }
 
