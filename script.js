@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Cek jika input adalah angka
     if (!isNaN(gear) && typeof gear === 'number') {
-        if (gear === 0) gearText = 'N';
-        else if (gear === -1) gearText = 'R';
+        if (gear === 0) gearText = 'R';
     }
 
     const upperGear = String(gearText).toUpperCase();
