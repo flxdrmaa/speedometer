@@ -21,29 +21,21 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const vehicleState = {
     engineOn: false
-    // Status seatbelt tidak perlu dilacak di sini lagi
   };
 
-  // --- PERBAIKAN UNTUK RPM ---
-  // Pastikan elemen RPM ada
   if (els.rpm) {
-    // 1. Buat kotak-kotak RPM terlebih dahulu
     for (let i = 0; i < 10; i++) {
       const box = document.createElement('div');
       box.className = 'rpm-box';
       els.rpm.appendChild(box);
     }
-    
-    // 2. Setelah dibuat, baru pilih kotak-kotak tersebut
     const rpmBoxes = Array.from(els.rpm.children);
-
-    // 3. Sekarang definisikan fungsi setRPM dengan referensi yang benar
     window.setRPM = (rpm) => {
         const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
         rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
     };
   } else {
-      window.setRPM = () => {}; // Buat fungsi kosong jika elemen RPM tidak ada
+      window.setRPM = () => {};
   }
 
   window.setSpeed = (speed) => {
@@ -52,15 +44,26 @@ document.addEventListener('DOMContentLoaded', () => {
     els.speed.textContent = val;
   };
 
+  // --- FUNGSI GEAR YANG DIPERBARUI (LEBIH PINTAR) ---
   /**
-   * Mengatur teks gear yang ditampilkan.
-   * CONTOH PANGGILAN: setGear('R') akan menampilkan R, setGear('N') akan menampilkan N.
-   * Jika Anda memanggil setGear('N') saat mobil mundur, maka itu yang akan tampil.
-   * Pastikan Anda mengirimkan data yang benar dari game Anda.
+   * Mengatur teks gear. Fungsi ini sekarang bisa menerima ANGKA atau TEKS.
+   * - Angka 0 akan diubah menjadi 'N'.
+   * - Angka -1 akan diubah menjadi 'R'.
+   * - Angka lain (1, 2, 3, dst.) akan ditampilkan apa adanya.
+   * - Teks ('P', 'D', dll.) akan ditampilkan apa adanya.
    */
   window.setGear = (gear) => {
     if (!els.gear) return;
-    const upperGear = String(gear).toUpperCase(); // Selalu ubah ke huruf besar
+
+    let gearText = gear;
+    
+    // Cek jika input adalah angka
+    if (!isNaN(gear) && typeof gear === 'number') {
+        if (gear === 0) gearText = 'N';
+        else if (gear === -1) gearText = 'R';
+    }
+
+    const upperGear = String(gearText).toUpperCase();
     els.gear.textContent = upperGear;
     
     if (upperGear === 'R') {
@@ -106,17 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleIcon('engine', vehicleState.engineOn);
   };
 
-  // --- PERBAIKAN UNTUK LOGIKA SEATBELT ---
-  /**
-   * Mengatur status ikon sabuk pengaman (lampu status).
-   * @param {boolean} isBuckled - true jika sabuk TERPASANG (ikon akan MENYALA).
-   *                              false jika sabuk DILEPAS (ikon akan MATI).
-   */
   window.setSeatbelts = (isBuckled) => {
-    const isNowOn = !!isBuckled;
-    toggleIcon('seatbelt', isNowOn);
-    // Karena ini bukan lagi peringatan, suara alarm tidak diperlukan.
-    // manageLoopingAudio(els.audio.alarm, false); 
+    toggleIcon('seatbelt', !!isBuckled);
   };
   
   window.setHeadlights = (level) => {
