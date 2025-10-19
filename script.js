@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const els = {
     health: document.getElementById('health-bar'),
     fuel: document.getElementById('fuel-bar'),
+    healthPercent: document.getElementById('health-percent'),
+    fuelPercent: document.getElementById('fuel-percent'),
     speed: document.getElementById('speed-display'),
     gear: document.getElementById('gear-display'),
     unit: document.getElementById('speed-unit'),
@@ -44,20 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     els.speed.textContent = val;
   };
 
-  // --- FUNGSI GEAR YANG DIPERBARUI (LEBIH PINTAR) ---
-  /**
-   * Mengatur teks gear. Fungsi ini sekarang bisa menerima ANGKA atau TEKS.
-   * - Angka 0 akan diubah menjadi 'N'.
-   * - Angka -1 akan diubah menjadi 'R'.
-   * - Angka lain (1, 2, 3, dst.) akan ditampilkan apa adanya.
-   * - Teks ('P', 'D', dll.) akan ditampilkan apa adanya.
-   */
   window.setGear = (gear) => {
     if (!els.gear) return;
 
     let gearText = gear;
     
-    // Cek jika input adalah angka
     if (!isNaN(gear) && typeof gear === 'number') {
         if (gear === 0) gearText = 'R';
     }
@@ -76,12 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!els.fuel) return;
     const p = Math.max(0, Math.min(1, val));
     els.fuel.style.transform = `translateY(${100 - p * 100}%)`;
+    if (els.fuelPercent) {
+      // Menambahkan simbol '%'
+      els.fuelPercent.textContent = Math.round(p * 100) + '%';
+    }
   };
 
   window.setHealth = (val) => {
     if (!els.health) return;
     const p = Math.max(0, Math.min(1, val));
     els.health.style.transform = `translateY(${100 - p * 100}%)`;
+    if (els.healthPercent) {
+      // Menambahkan simbol '%'
+      els.healthPercent.textContent = Math.round(p * 100) + '%';
+    }
   };
 
   const toggleIcon = (id, state) => {
