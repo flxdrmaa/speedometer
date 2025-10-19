@@ -5,7 +5,8 @@
   --off: rgba(255, 255, 255, 0.25);
   --health-color: rgba(0, 255, 0, 0.8);
   --fuel-color: rgba(255, 165, 0, 0.8);
-  --high-beam-color: #00aeff; /* Warna biru untuk lampu jauh */
+  --high-beam-color: #00aeff;
+  --reverse-color: #ff3d3d; /* Warna merah untuk gear mundur */
 }
 
 * {
@@ -21,7 +22,6 @@ body {
   color: white;
 }
 
-/* UKURAN SPEEDOMETER DIKEMBALIKAN KE SEMULA */
 .speedo-root {
   position: fixed;
   right: 25px;
@@ -41,7 +41,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Left Bars */
 .left-bars {
   display: flex;
   flex-direction: row;
@@ -86,7 +85,6 @@ body {
   filter: brightness(0) invert(1) opacity(0.7); 
 }
 
-/* Center Panel */
 .center-panel {
   flex-grow: 1;
   display: flex;
@@ -94,6 +92,13 @@ body {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* KONTENER BARU UNTUK SPEED DAN GEAR */
+.speed-container {
+  display: flex;
+  align-items: baseline; /* Sejajarkan di bagian bawah teks */
+  gap: 8px;
 }
 
 .speed-display {
@@ -105,19 +110,32 @@ body {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
+/* STYLE UNTUK GEAR DISPLAY */
+.gear-display {
+  font-family: 'DS-Digital', sans-serif;
+  font-size: 40px;
+  font-weight: normal;
+  color: var(--glow);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+/* Style khusus saat gear mundur */
+.gear-display.gear-reverse {
+  color: var(--reverse-color);
+  text-shadow: 0 0 10px var(--reverse-color);
+}
+
+
 .speed-unit {
   font-size: 12px;
   font-weight: bold;
   opacity: 0.8;
   letter-spacing: 1px;
-  margin-top: 2px;
+  margin-top: -4px; /* Sesuaikan posisi unit */
 }
 
-.rpm-container {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-}
+.rpm-container { margin-top: 10px; }
 
 #rpm-boxes {
   display: grid;
@@ -151,42 +169,19 @@ body {
   height: 24px;
   object-fit: contain;
   transition: filter 0.3s;
-  /* State "off" default untuk semua ikon */
   filter: brightness(0) invert(1) opacity(0.25);
 }
 
 #icon-right img { transform: scaleX(-1); }
 
-
-/* --- LOGIKA BARU UNTUK IKON LAMPU --- */
-
-/* Sembunyikan ikon lampu jauh secara default */
-#icon-lights .high-beam-icon {
-  display: none;
-}
-
-/* Tampilkan ikon lampu dekat, yang akan mewarisi filter "off" dari .icon img */
-#icon-lights .low-beam-icon {
-  display: block;
-}
-
-/* Saat mode lampu dekat aktif (.low-beam) */
-#icon-lights.low-beam .low-beam-icon {
-  filter: brightness(0) invert(1) drop-shadow(0 0 8px var(--glow));
-}
-
-/* Saat mode lampu jauh aktif (.high-beam) */
-#icon-lights.high-beam .low-beam-icon {
-  display: none; /* Sembunyikan ikon lampu dekat */
-}
+#icon-lights .high-beam-icon { display: none; }
+#icon-lights .low-beam-icon { display: block; }
+#icon-lights.low-beam .low-beam-icon { filter: brightness(0) invert(1) drop-shadow(0 0 8px var(--glow)); }
+#icon-lights.high-beam .low-beam-icon { display: none; }
 #icon-lights.high-beam .high-beam-icon {
-  display: block; /* Tampilkan ikon lampu jauh */
-  /* Filter untuk warna biru */
+  display: block;
   filter: invert(65%) sepia(85%) saturate(1519%) hue-rotate(170deg) brightness(101%) contrast(101%) drop-shadow(0 0 8px var(--high-beam-color));
 }
-
-/* --- AKHIR LOGIKA LAMPU BARU --- */
-
 
 .icon.active#icon-engine img,
 .icon.active#icon-seatbelt img {
@@ -199,6 +194,4 @@ body {
     animation: blinker 1s linear infinite;
 }
 
-@keyframes blinker {  
-  50% { opacity: 0.2; }
-}
+@keyframes blinker { 50% { opacity: 0.2; } }
