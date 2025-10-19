@@ -25,10 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   const rpmBoxes = Array.from(els.rpm.children);
 
-  // Fungsi untuk mengatur kecepatan (m/s -> km/h)
+  // Fungsi untuk mengatur kecepatan (m/s -> km/h, tanpa nol di depan)
   window.setSpeed = (speed) => {
     const val = Math.round(Math.max(0, speed * 3.6)); // Konversi ke km/h, minimal 0
-    els.speed.textContent = val.toString().padStart(3, '0');
+    els.speed.textContent = val; // Tanpa padStart untuk menghapus nol di depan
   };
 
   // Fungsi untuk mengatur RPM
