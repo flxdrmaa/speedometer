@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     health: document.getElementById('health-bar'),
     fuel: document.getElementById('fuel-bar'),
     speed: document.getElementById('speed-display'),
-    gear: document.getElementById('gear-display'), // Elemen gear ditambahkan
+    gear: document.getElementById('gear-display'),
     unit: document.getElementById('speed-unit'),
     rpm: document.getElementById('rpm-boxes'),
     icons: {
@@ -19,28 +19,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // (Kode validasi dan fungsi lainnya tetap sama seperti versi toleran sebelumnya)
-  // ...
-
   const vehicleState = {
-    engineOn: false,
-    seatbeltOn: true // Asumsikan sabuk terpasang di awal
+    engineOn: false
+    // Status seatbelt tidak perlu dilacak di sini lagi
   };
 
+  // --- PERBAIKAN UNTUK RPM ---
+  // Pastikan elemen RPM ada
   if (els.rpm) {
-    const rpmBoxes = Array.from(els.rpm.children);
-    window.setRPM = (rpm) => {
-        if (!rpmBoxes) return;
-        const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
-        rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
-    };
+    // 1. Buat kotak-kotak RPM terlebih dahulu
     for (let i = 0; i < 10; i++) {
       const box = document.createElement('div');
       box.className = 'rpm-box';
       els.rpm.appendChild(box);
     }
+    
+    // 2. Setelah dibuat, baru pilih kotak-kotak tersebut
+    const rpmBoxes = Array.from(els.rpm.children);
+
+    // 3. Sekarang definisikan fungsi setRPM dengan referensi yang benar
+    window.setRPM = (rpm) => {
+        const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
+        rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
+    };
   } else {
-    window.setRPM = ()=>{};
+      window.setRPM = () => {}; // Buat fungsi kosong jika elemen RPM tidak ada
   }
 
   window.setSpeed = (speed) => {
@@ -49,12 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
     els.speed.textContent = val;
   };
 
-  // --- FUNGSI BARU UNTUK GEAR ---
+  /**
+   * Mengatur teks gear yang ditampilkan.
+   * CONTOH PANGGILAN: setGear('R') akan menampilkan R, setGear('N') akan menampilkan N.
+   * Jika Anda memanggil setGear('N') saat mobil mundur, maka itu yang akan tampil.
+   * Pastikan Anda mengirimkan data yang benar dari game Anda.
+   */
   window.setGear = (gear) => {
     if (!els.gear) return;
-    els.gear.textContent = gear;
-    // Tambahkan kelas 'gear-reverse' jika gear adalah 'R', hapus jika bukan
-    if (gear === 'R' || gear === 'r') {
+    const upperGear = String(gear).toUpperCase(); // Selalu ubah ke huruf besar
+    els.gear.textContent = upperGear;
+    
+    if (upperGear === 'R') {
       els.gear.classList.add('gear-reverse');
     } else {
       els.gear.classList.remove('gear-reverse');
@@ -89,31 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
       audioEl.currentTime = 0;
     }
   };
-
-  const updateSeatbeltWarning = () => {
-    const isWarningActive = vehicleState.engineOn && !vehicleState.seatbeltOn;
-    toggleIcon('seatbelt', isWarningActive);
-    manageLoopingAudio(els.audio.alarm, isWarningActive);
-  };
   
   window.setEngine = (on) => {
     const newState = !!on;
     if (vehicleState.engineOn === newState) return;
     vehicleState.engineOn = newState;
     toggleIcon('engine', vehicleState.engineOn);
-    updateSeatbeltWarning();
   };
 
+  // --- PERBAIKAN UNTUK LOGIKA SEATBELT ---
   /**
-   * Mengatur status sabuk pengaman.
-   * @param {boolean} isBuckled - true jika sabuk terpasang, false jika tidak terpasang.
+   * Mengatur status ikon sabuk pengaman (lampu status).
+   * @param {boolean} isBuckled - true jika sabuk TERPASANG (ikon akan MENYALA).
+   *                              false jika sabuk DILEPAS (ikon akan MATI).
    */
   window.setSeatbelts = (isBuckled) => {
-    const newState = !!isBuckled;
-    if (vehicleState.seatbeltOn === newState) return; // Tidak ada perubahan
-    vehicleState.seatbeltOn = newState;
-    // Cek kembali apakah peringatan perlu dinyalakan atau dimatikan.
-    updateSeatbeltWarning();
+    const isNowOn = !!isBuckled;
+    toggleIcon('seatbelt', isNowOn);
+    // Karena ini bukan lagi peringatan, suara alarm tidak diperlukan.
+    // manageLoopingAudio(els.audio.alarm, false); 
   };
   
   window.setHeadlights = (level) => {
@@ -143,6 +146,4 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleIcon('right', on);
     updateIndicatorSound();
   };
-
-  updateSeatbeltWarning();
 });
