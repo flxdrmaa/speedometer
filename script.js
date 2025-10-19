@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
       left: document.getElementById('icon-left'),
       right: document.getElementById('icon-right'),
       seatbelt: document.getElementById('icon-seatbelt')
+    },
+    // Seleksi elemen audio
+    audio: {
+      tick: document.getElementById('audio-tick'),
+      alarm: document.getElementById('audio-alarm')
     }
   };
 
@@ -27,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Fungsi untuk mengatur kecepatan (m/s -> mph)
   window.setSpeed = (speed) => {
-    // Konversi ke mph (1 m/s = 2.23694 mph), minimal 0
     const val = Math.round(Math.max(0, speed * 2.23694)); 
     els.speed.textContent = val;
   };
@@ -56,10 +60,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleIcon = (id, state) => {
     els.icons[id].classList.toggle('active', !!state);
   };
+  
+  // Fungsi untuk memutar atau menghentikan audio
+  const handleAudio = (audioEl, play) => {
+      if (play) {
+        // Cek jika audio belum diputar
+        if (audioEl.paused) {
+            audioEl.play().catch(e => console.error("Audio failed to play:", e));
+        }
+      } else {
+        audioEl.pause();
+        audioEl.currentTime = 0; // Reset waktu audio
+      }
+  };
+
 
   window.setEngine = (on) => toggleIcon('engine', on);
   window.setHeadlights = (on) => toggleIcon('lights', on > 0);
-  window.setLeftIndicator = (on) => toggleIcon('left', on);
-  window.setRightIndicator = (on) => toggleIcon('right', on);
-  window.setSeatbelts = (on) => toggleIcon('seatbelt', on);
+  
+  window.setLeftIndicator = (on) => {
+      toggleIcon('left', on);
+      // Jika sein kanan aktif, matikan suaranya
+      if(els.icons.right.classList.contains('active')) return;
+      handleAudio(els.audio.tick, on);
+  };
+  
+  window.setRightIndicator = (on) => {
+      toggleIcon('right', on);
+      // Jika sein kiri aktif, matikan suaranya
+      if(els.icons.left.classList.contains('active')) return;
+      handleAudio(els.audio.tick, on);
+  };
+
+  window.setSeatbelts = (on) => {
+      // Ikon aktif jika sabuk pengaman TIDAK terpasang
+      toggleIcon('seatbelt', !on); 
+      // Mainkan alarm jika sabuk pengaman TIDAK terpasang
+      handleAudio(els.audio.alarm, !on); 
+  };
 });
