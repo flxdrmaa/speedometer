@@ -25,10 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   const rpmBoxes = Array.from(els.rpm.children);
 
-  // Fungsi untuk mengatur kecepatan (m/s -> km/h, tanpa nol di depan)
+  // --- PERUBAHAN DI SINI ---
+  // Fungsi untuk mengatur kecepatan (m/s -> mph)
   window.setSpeed = (speed) => {
-    const val = Math.round(Math.max(0, speed * 3.6)); // Konversi ke km/h, minimal 0
-    els.speed.textContent = val; // Tanpa padStart untuk menghapus nol di depan
+    // Konversi ke mph (1 m/s = 2.23694 mph), minimal 0
+    const val = Math.round(Math.max(0, speed * 2.23694)); 
+    els.speed.textContent = val;
   };
 
   // Fungsi untuk mengatur RPM
@@ -61,4 +63,4 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setLeftIndicator = (on) => toggleIcon('left', on);
   window.setRightIndicator = (on) => toggleIcon('right', on);
   window.setSeatbelts = (on) => toggleIcon('seatbelt', on);
-});
+})
