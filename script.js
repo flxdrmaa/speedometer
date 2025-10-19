@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   const rpmBoxes = Array.from(els.rpm.children);
 
-  // --- PERUBAHAN DI SINI ---
   // Fungsi untuk mengatur kecepatan (m/s -> mph)
   window.setSpeed = (speed) => {
     // Konversi ke mph (1 m/s = 2.23694 mph), minimal 0
@@ -35,20 +34,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Fungsi untuk mengatur RPM
   window.setRPM = (rpm) => {
-    const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10); // Normalisasi 0-1 ke 0-10
+    const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
     rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
   };
 
   // Fungsi untuk mengatur level bahan bakar
   window.setFuel = (val) => {
-    const p = Math.max(0, Math.min(1, val)); // Normalisasi 0-1
+    const p = Math.max(0, Math.min(1, val));
     els.fuel.style.transform = `translateY(${100 - p * 100}%)`;
     els.fuelPct.textContent = `${Math.round(p * 100)}%`;
   };
 
   // Fungsi untuk mengatur level kesehatan
   window.setHealth = (val) => {
-    const p = Math.max(0, Math.min(1, val)); // Normalisasi 0-1
+    const p = Math.max(0, Math.min(1, val));
     els.health.style.transform = `translateY(${100 - p * 100}%)`;
     els.healthPct.textContent = `${Math.round(p * 100)}%`;
   };
@@ -63,4 +62,4 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setLeftIndicator = (on) => toggleIcon('left', on);
   window.setRightIndicator = (on) => toggleIcon('right', on);
   window.setSeatbelts = (on) => toggleIcon('seatbelt', on);
-})
+});
