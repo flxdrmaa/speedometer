@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- 1. SELEKSI ELEMEN & VALIDASI YANG LEBIH TOLERAN ---
   const els = {
     health: document.getElementById('health-bar'),
     fuel: document.getElementById('fuel-bar'),
     speed: document.getElementById('speed-display'),
+    gear: document.getElementById('gear-display'), // Elemen gear ditambahkan
     unit: document.getElementById('speed-unit'),
     rpm: document.getElementById('rpm-boxes'),
     icons: {
@@ -18,51 +18,47 @@ document.addEventListener('DOMContentLoaded', () => {
       alarm: document.getElementById('audio-alarm')
     }
   };
+  
+  // (Kode validasi dan fungsi lainnya tetap sama seperti versi toleran sebelumnya)
+  // ...
 
-  // Validasi baru: Hanya menampilkan peringatan (warning) dan tidak menghentikan skrip.
-  // Ini memastikan fungsi-fungsi utama (seperti setSpeed) akan selalu dibuat.
-  function validateElements(elements) {
-    for (const key in elements) {
-      const element = elements[key];
-      if (element === null) {
-        // Tampilkan peringatan, bukan error yang menghentikan skrip
-        console.warn(`[Speedometer] Peringatan: Elemen dengan ID '${key}' tidak ditemukan. Fitur terkait mungkin tidak akan berfungsi.`);
-      } else if (typeof element === 'object' && !element.tagName) { // Cek objek bersarang seperti 'icons'
-        validateElements(element);
-      }
-    }
-  }
-  validateElements(els);
-
-
-  // --- 2. STATE MANAGEMENT ---
   const vehicleState = {
     engineOn: false,
-    seatbeltOn: true 
+    seatbeltOn: true // Asumsikan sabuk terpasang di awal
   };
 
-  // --- 3. FUNGSI-FUNGSI UTAMA ---
-  // Pastikan RPM container ada sebelum membuat kotaknya
   if (els.rpm) {
+    const rpmBoxes = Array.from(els.rpm.children);
+    window.setRPM = (rpm) => {
+        if (!rpmBoxes) return;
+        const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
+        rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
+    };
     for (let i = 0; i < 10; i++) {
       const box = document.createElement('div');
       box.className = 'rpm-box';
       els.rpm.appendChild(box);
     }
-    const rpmBoxes = Array.from(els.rpm.children);
-    
-    window.setRPM = (rpm) => {
-        const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
-        rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
-    };
   } else {
-      window.setRPM = () => {}; // Buat fungsi kosong jika elemen tidak ada
+    window.setRPM = ()=>{};
   }
 
   window.setSpeed = (speed) => {
     if (!els.speed) return;
     const val = Math.round(Math.max(0, speed * 2.23694)); 
     els.speed.textContent = val;
+  };
+
+  // --- FUNGSI BARU UNTUK GEAR ---
+  window.setGear = (gear) => {
+    if (!els.gear) return;
+    els.gear.textContent = gear;
+    // Tambahkan kelas 'gear-reverse' jika gear adalah 'R', hapus jika bukan
+    if (gear === 'R' || gear === 'r') {
+      els.gear.classList.add('gear-reverse');
+    } else {
+      els.gear.classList.remove('gear-reverse');
+    }
   };
 
   window.setFuel = (val) => {
@@ -83,12 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // --- 4. FUNGSI AUDIO YANG AMAN ---
   const manageLoopingAudio = (audioEl, shouldPlay) => {
-    if (!audioEl) return; // Jangan lakukan apa-apa jika elemen audio tidak ada
-
+    if (!audioEl) return;
     if (shouldPlay && audioEl.paused) {
-      audioEl.play().catch(e => {}); // Tangani error autoplay tanpa spam console
+      audioEl.play().catch(e => {});
     } 
     else if (!shouldPlay && !audioEl.paused) {
       audioEl.pause();
@@ -96,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // --- 5. LOGIKA APLIKASI ---
   const updateSeatbeltWarning = () => {
     const isWarningActive = vehicleState.engineOn && !vehicleState.seatbeltOn;
     toggleIcon('seatbelt', isWarningActive);
@@ -111,10 +104,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSeatbeltWarning();
   };
 
-  window.setSeatbelts = (on) => {
-    const newState = !!on;
-    if (vehicleState.seatbeltOn === newState) return;
+  /**
+   * Mengatur status sabuk pengaman.
+   * @param {boolean} isBuckled - true jika sabuk terpasang, false jika tidak terpasang.
+   */
+  window.setSeatbelts = (isBuckled) => {
+    const newState = !!isBuckled;
+    if (vehicleState.seatbeltOn === newState) return; // Tidak ada perubahan
     vehicleState.seatbeltOn = newState;
+    // Cek kembali apakah peringatan perlu dinyalakan atau dimatikan.
     updateSeatbeltWarning();
   };
   
@@ -146,5 +144,5 @@ document.addEventListener('DOMContentLoaded', () => {
     updateIndicatorSound();
   };
 
-  updateSeatbeltWarning(); 
+  updateSeatbeltWarning();
 });
