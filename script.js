@@ -21,8 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
+  // Menyimpan state kendaraan dan gear terakhir
   const vehicleState = {
-    engineOn: false
+    engineOn: false,
+    lastGear: 1 // Asumsi gear awal adalah 1 atau netral
   };
 
   if (els.rpm) {
@@ -49,15 +51,26 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setGear = (gear) => {
     if (!els.gear) return;
 
-    let gearText = gear;
-    
-    if (!isNaN(gear) && typeof gear === 'number') {
-        if (gear === 0) gearText = 'R';
+    // Simpan gear terakhir yang valid (bukan N)
+    if (typeof gear === 'number') {
+      vehicleState.lastGear = gear;
+    }
+
+    let gearText;
+
+    // Logika baru untuk menentukan teks gear
+    if (!vehicleState.engineOn) {
+      gearText = 'N'; // Jika mesin mati, tampilkan 'N'
+    } else if (gear === 0) {
+      gearText = 'R'; // Jika gear 0 (mundur), tampilkan 'R'
+    } else {
+      gearText = gear; // Tampilkan gear seperti biasa
     }
 
     const upperGear = String(gearText).toUpperCase();
     els.gear.textContent = upperGear;
     
+    // Atur style untuk gear mundur
     if (upperGear === 'R') {
       els.gear.classList.add('gear-reverse');
     } else {
@@ -70,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const p = Math.max(0, Math.min(1, val));
     els.fuel.style.transform = `translateY(${100 - p * 100}%)`;
     if (els.fuelPercent) {
-      // Menambahkan simbol '%'
       els.fuelPercent.textContent = Math.round(p * 100) + '%';
     }
   };
@@ -80,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const p = Math.max(0, Math.min(1, val));
     els.health.style.transform = `translateY(${100 - p * 100}%)`;
     if (els.healthPercent) {
-      // Menambahkan simbol '%'
       els.healthPercent.textContent = Math.round(p * 100) + '%';
     }
   };
@@ -105,8 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setEngine = (on) => {
     const newState = !!on;
     if (vehicleState.engineOn === newState) return;
+    
     vehicleState.engineOn = newState;
     toggleIcon('engine', vehicleState.engineOn);
+    
+    // Panggil setGear lagi untuk update tampilan (menjadi 'N' atau kembali ke gear terakhir)
+    window.setGear(vehicleState.lastGear);
   };
 
   window.setSeatbelts = (isBuckled) => {
