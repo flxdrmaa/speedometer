@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Menyimpan state kendaraan dan gear terakhir
+  // Menambahkan state `hasMoved` untuk melacak pergerakan
   const vehicleState = {
     engineOn: false,
-    lastGear: 1 // Asumsi gear awal adalah 1 atau netral
+    hasMoved: false // Awalnya false
   };
 
   if (els.rpm) {
@@ -42,35 +42,42 @@ document.addEventListener('DOMContentLoaded', () => {
       window.setRPM = () => {};
   }
 
+  // Modifikasi: `setSpeed` sekarang juga akan mengubah state `hasMoved`
   window.setSpeed = (speed) => {
     if (!els.speed) return;
     const val = Math.round(Math.max(0, speed * 2.23694)); 
     els.speed.textContent = val;
+
+    // Jika kecepatan di atas 0, tandai bahwa mobil sudah bergerak
+    if (val > 0) {
+        vehicleState.hasMoved = true;
+    }
   };
 
+  // Modifikasi: Logika penentuan gear yang baru
   window.setGear = (gear) => {
     if (!els.gear) return;
 
-    // Simpan gear terakhir yang valid (bukan N)
-    if (typeof gear === 'number') {
-      vehicleState.lastGear = gear;
-    }
-
     let gearText;
 
-    // Logika baru untuk menentukan teks gear
     if (!vehicleState.engineOn) {
-      gearText = 'N'; // Jika mesin mati, tampilkan 'N'
-    } else if (gear === 0) {
-      gearText = 'R'; // Jika gear 0 (mundur), tampilkan 'R'
+        gearText = 'N'; // Jika mesin mati, selalu 'N'
     } else {
-      gearText = gear; // Tampilkan gear seperti biasa
+        // Logika baru saat mesin hidup
+        if (gear > 0) {
+            gearText = gear; // Gear maju (1, 2, 3...)
+        } else if (gear === 0 && vehicleState.hasMoved) {
+            // Gear 0 dan mobil sudah pernah bergerak = Mundur ('R')
+            gearText = 'R';
+        } else {
+            // Semua kondisi lain (termasuk gear 0 saat mobil belum bergerak) = Netral ('N')
+            gearText = 'N';
+        }
     }
 
     const upperGear = String(gearText).toUpperCase();
     els.gear.textContent = upperGear;
     
-    // Atur style untuk gear mundur
     if (upperGear === 'R') {
       els.gear.classList.add('gear-reverse');
     } else {
@@ -113,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
+  // Modifikasi: `setEngine` akan me-reset status `hasMoved`
   window.setEngine = (on) => {
     const newState = !!on;
     if (vehicleState.engineOn === newState) return;
@@ -120,8 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
     vehicleState.engineOn = newState;
     toggleIcon('engine', vehicleState.engineOn);
     
-    // Panggil setGear lagi untuk update tampilan (menjadi 'N' atau kembali ke gear terakhir)
-    window.setGear(vehicleState.lastGear);
+    // Jika mesin dimatikan, reset status `hasMoved` dan tampilkan 'N'
+    if (!newState) {
+        vehicleState.hasMoved = false;
+        window.setGear('N'); // Paksa tampilkan 'N'
+    } else {
+        // Jika mesin baru dinyalakan, panggil `setGear` dengan gear saat ini (kemungkinan 0)
+        // Logika baru di `setGear` akan menampilkannya sebagai 'N' karena `hasMoved` masih false
+        window.setGear(0);
+    }
   };
 
   window.setSeatbelts = (isBuckled) => {
