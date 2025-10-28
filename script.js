@@ -232,5 +232,3 @@ toggleIcon('right', on);
 updateIndicatorSound();
 };
 });
-
-ketika sein kanan kiri aktif maka kedip kedipnta di buat bareng
