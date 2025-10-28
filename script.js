@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setFuel = (val) => {
     if (!els.fuel) return;
     const p = Math.max(0, Math.min(1, val));
+    // Memperbaiki sintaks template literal
     els.fuel.style.transform = `translateY(${100 - p * 100}%)`;
     if (els.fuelPercent) {
       els.fuelPercent.textContent = Math.round(p * 100) + '%';
@@ -85,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setHealth = (val) => {
     if (!els.health) return;
     const p = Math.max(0, Math.min(1, val));
+    // Memperbaiki sintaks template literal
     els.health.style.transform = `translateY(${100 - p * 100}%)`;
     if (els.healthPercent) {
       els.healthPercent.textContent = Math.round(p * 100) + '%';
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const manageLoopingAudio = (audioEl, shouldPlay) => {
     if (!audioEl) return;
     if (shouldPlay && audioEl.paused) {
-      audioEl.play().catch(e => console.error("Audio play failed:", e));
+      audioEl.play().catch(e => {});
     } 
     else if (!shouldPlay && !audioEl.paused) {
       audioEl.pause();
@@ -108,6 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
+  window.setSeatbelts = (isNotBuckled) => {
+    // Logika diubah: true berarti peringatan (tidak terpasang)
+    toggleIcon('seatbelt', !!isNotBuckled);
+    const shouldPlayAlarm = !!isNotBuckled && vehicleState.engineOn;
+    manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
+  };
+  
+  // Hanya ada satu fungsi setEngine, yang ini sudah mencakup logika alarm
   window.setEngine = (on) => {
     const newState = !!on;
     if (vehicleState.engineOn === newState) return;
@@ -121,16 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
         manageLoopingAudio(els.audio.alarm, false);
     } else {
         window.setGear(0);
-        const isSeatbeltBuckled = els.icons.seatbelt && !els.icons.seatbelt.classList.contains('active');
-        manageLoopingAudio(els.audio.alarm, isSeatbeltBuckled);
+        // Periksa apakah seatbelt tidak terpasang untuk menyalakan alarm
+        const isSeatbeltWarningOn = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
+        if (isSeatbeltWarningOn) {
+            manageLoopingAudio(els.audio.alarm, true);
+        }
     }
-  };
-
-  window.setSeatbelts = (isNotBuckled) => {
-    // Logika diubah: ikon 'active' berarti peringatan (tidak terpasang)
-    toggleIcon('seatbelt', !!isNotBuckled);
-    const shouldPlayAlarm = !!isNotBuckled && vehicleState.engineOn;
-    manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
   };
   
   window.setHeadlights = (level) => {
@@ -144,39 +150,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
+  // --- FUNGSI BARU UNTUK MENGONTROL LOGIKA SEIN ---
   const updateIndicators = () => {
     if (!els.icons.left || !els.icons.right) return;
     
     const leftActive = els.icons.left.classList.contains('active');
     const rightActive = els.icons.right.classList.contains('active');
     
-    // Hapus status kedip sebelumnya
+    // 1. Selalu hapus kelas animasi di awal
     els.icons.left.classList.remove('is-blinking');
     els.icons.right.classList.remove('is-blinking');
 
+    // 2. Terapkan logika baru
     if (leftActive && rightActive) {
-      // Mode Hazard: keduanya berkedip
+      // Mode Hazard: Keduanya aktif, tambahkan kelas animasi ke keduanya
       els.icons.left.classList.add('is-blinking');
       els.icons.right.classList.add('is-blinking');
     } else if (leftActive) {
-      // Hanya kiri berkedip
+      // Hanya kiri yang aktif
       els.icons.left.classList.add('is-blinking');
     } else if (rightActive) {
-      // Hanya kanan berkedip
+      // Hanya kanan yang aktif
       els.icons.right.classList.add('is-blinking');
     }
 
-    // Putar suara jika salah satu atau keduanya aktif
+    // 3. Putar suara jika salah satu atau keduanya aktif
     manageLoopingAudio(els.audio.tick, leftActive || rightActive);
   };
 
+  // --- MODIFIKASI FUNGSI SEIN ---
   window.setLeftIndicator = (on) => {
     toggleIcon('left', on);
-    updateIndicators();
+    updateIndicators(); // Panggil fungsi logika yang baru
   };
   
   window.setRightIndicator = (on) => {
     toggleIcon('right', on);
-    updateIndicators();
+    updateIndicators(); // Panggil fungsi logika yang baru
   };
 });
