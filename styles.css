@@ -10,7 +10,7 @@
   --high-beam-color: #00aeff;
   --reverse-color: #ff3d3d;
   --active-blue-color: #00aeff;
-  --seatbelt-warning-color: #ff3d3d;
+  /* Variabel seatbelt-warning-color tidak lagi diperlukan */
 }
 
 * {
@@ -182,15 +182,12 @@ body {
 
 /* --- Indicator States --- */
 
-/* PERBAIKAN: Aturan warna biru digabung untuk engine dan sein */
+/* PERBAIKAN: Aturan warna biru sekarang berlaku untuk SEMUA ikon aktif */
 .icon.active#icon-engine img,
 .icon.active#icon-left img,
-.icon.active#icon-right img {
-  filter: invert(65%) sepia(85%) saturate(500%) hue-rotate(170deg) brightness(110%) contrast(101%) drop-shadow(0 0 6px var(--active-blue-color));
-}
-
+.icon.active#icon-right img,
 .icon.active#icon-seatbelt img {
-  filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(330deg) brightness(101%) contrast(101%) drop-shadow(0 0 8px var(--seatbelt-warning-color));
+  filter: invert(65%) sepia(85%) saturate(500%) hue-rotate(170deg) brightness(110%) contrast(101%) drop-shadow(0 0 6px var(--active-blue-color));
 }
 
 #icon-lights.low-beam .low-beam-icon {
@@ -206,7 +203,7 @@ body {
 #icon-lights .high-beam-icon { display: none; }
 #icon-lights .low-beam-icon { display: block; }
 
-/* Aturan untuk menjalankan animasi KETIKA AKTIF DAN MEMILIKI KELAS .is-blinking */
+/* Aturan untuk menjalankan animasi sein */
 .icon.active.is-blinking#icon-left img,
 .icon.active.is-blinking#icon-right img {
   animation: blinker 0.8s linear infinite;
@@ -214,7 +211,6 @@ body {
 
 @keyframes blinker { 
   50% { 
-    /* PERBAIKAN: Animasi kedip juga menggunakan filter biru */
     filter: invert(65%) sepia(85%) saturate(500%) hue-rotate(170deg) brightness(110%) contrast(101%) opacity(0.2);
   } 
 }
