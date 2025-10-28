@@ -139,8 +139,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  window.setSeatbelts = (isBuckled) => {
+ window.setSeatbelts = (isBuckled) => {
     toggleIcon('seatbelt', !!isBuckled);
+    
+    // Tambahkan logika untuk alarm:
+    // Alarm hanya berbunyi jika sabuk pengaman tidak terpasang DAN mesin menyala.
+    const shouldPlayAlarm = !isBuckled && vehicleState.engineOn;
+    manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
+  };
+
+  // ... (kode Anda yang lain antara setSeatbelts dan setEngine)
+
+  // Modifikasi: `setEngine` akan me-reset status `hasMoved` dan mengelola alarm
+  window.setEngine = (on) => {
+    const newState = !!on;
+    if (vehicleState.engineOn === newState) return;
+    
+    vehicleState.engineOn = newState;
+    toggleIcon('engine', vehicleState.engineOn);
+    
+    // Jika mesin dimatikan, reset status `hasMoved`, tampilkan 'N', dan matikan alarm
+    if (!newState) {
+        vehicleState.hasMoved = false;
+        window.setGear('N'); // Paksa tampilkan 'N'
+        manageLoopingAudio(els.audio.alarm, false); // Hentikan alarm saat mesin mati
+    } else {
+        // Jika mesin baru dinyalakan, panggil `setGear` dengan gear saat ini
+        window.setGear(0);
+        // Periksa status sabuk pengaman saat ini untuk menentukan apakah alarm harus diputar
+        const isSeatbeltBuckled = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
+        if (!isSeatbeltBuckled) {
+            manageLoopingAudio(els.audio.alarm, true);
+        }
+    }
   };
   
   window.setHeadlights = (level) => {
