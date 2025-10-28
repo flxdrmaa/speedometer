@@ -1,177 +1,234 @@
-root {
---bg1: rgba(0, 20, 50, 0.6);
---bg2: rgba(0, 10, 30, 0.3);
---glow: rgba(255, 255, 255, 0.95);
---off: rgba(255, 255, 255, 0.25);
---health-color: rgba(0, 255, 0, 0.8);
---fuel-color: rgba(255, 165, 0, 0.8);
---high-beam-color: #00aeff;
---reverse-color: #ff3d3d;
---active-blue-color: #00aeff;
+document.addEventListener('DOMContentLoaded', () => {
+const els = {
+health: document.getElementById('health-bar'),
+fuel: document.getElementById('fuel-bar'),
+healthPercent: document.getElementById('health-percent'),
+fuelPercent: document.getElementById('fuel-percent'),
+speed: document.getElementById('speed-display'),
+gear: document.getElementById('gear-display'),
+unit: document.getElementById('speed-unit'),
+rpm: document.getElementById('rpm-boxes'),
+icons: {
+engine: document.getElementById('icon-engine'),
+lights: document.getElementById('icon-lights'),
+left: document.getElementById('icon-left'),
+right: document.getElementById('icon-right'),
+seatbelt: document.getElementById('icon-seatbelt')
+},
+audio: {
+tick: document.getElementById('audio-tick'),
+alarm: document.getElementById('audio-alarm')
 }
-{
-user-select: none;
-margin: 0;
-padding: 0;
-box-sizing: border-box;
+};
+
+// Menambahkan state hasMoved untuk melacak pergerakan
+const vehicleState = {
+engineOn: false,
+hasMoved: false // Awalnya false
+};
+
+if (els.rpm) {
+for (let i = 0; i < 10; i++) {
+const box = document.createElement('div');
+box.className = 'rpm-box';
+els.rpm.appendChild(box);
 }
-body {
-background: transparent;
-font-family: 'Orbitron', monospace;
-color: white;
+const rpmBoxes = Array.from(els.rpm.children);
+window.setRPM = (rpm) => {
+const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
+rpmBoxes.forEach((box, i) => box.classList.toggle('on', i < active));
+};
+} else {
+window.setRPM = () => {};
 }
-.speedo-root {
-position: fixed;
-right: 25px;
-bottom: 25px;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 12px;
-width: 260px;
-height: 175px;
-padding: 12px;
-background: linear-gradient(145deg, var(--bg1), var(--bg2));
-border-radius: 16px;
-backdrop-filter: blur(8px);
--webkit-backdrop-filter: blur(8px);
-box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
-border: 1px solid rgba(255, 255, 255, 0.1);
+
+// Modifikasi: setSpeed sekarang juga akan mengubah state hasMoved
+window.setSpeed = (speed) => {
+if (!els.speed) return;
+const val = Math.round(Math.max(0, speed * 2.23694));
+els.speed.textContent = val;
+
+code
+Code
+download
+content_copy
+expand_less
+// Jika kecepatan di atas 0, tandai bahwa mobil sudah bergerak
+if (val > 0) {
+    vehicleState.hasMoved = true;
 }
-.left-bars {
-display: flex;
-flex-direction: row;
-gap: 12px;
-height: 100%;
-align-items: center;
+
+};
+
+// Modifikasi: Logika penentuan gear yang baru
+window.setGear = (gear) => {
+if (!els.gear) return;
+
+code
+Code
+download
+content_copy
+expand_less
+let gearText;
+
+if (!vehicleState.engineOn) {
+    gearText = 'N'; // Jika mesin mati, selalu 'N'
+} else {
+    // Logika baru saat mesin hidup
+    if (gear > 0) {
+        gearText = gear; // Gear maju (1, 2, 3...)
+    } else if (gear === 0 && vehicleState.hasMoved) {
+        // Gear 0 dan mobil sudah pernah bergerak = Mundur ('R')
+        gearText = 'R';
+    } else {
+        // Semua kondisi lain (termasuk gear 0 saat mobil belum bergerak) = Netral ('N')
+        gearText = 'N';
+    }
 }
-.bar-container {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 4px;
-height: 100%;
-justify-content: center;
+
+const upperGear = String(gearText).toUpperCase();
+els.gear.textContent = upperGear;
+
+if (upperGear === 'R') {
+  els.gear.classList.add('gear-reverse');
+} else {
+  els.gear.classList.remove('gear-reverse');
 }
-.bar-label {
-font-size: 10px;
-font-weight: bold;
-color: var(--off);
-text-transform: uppercase;
+
+};
+
+window.setFuel = (val) => {
+if (!els.fuel) return;
+const p = Math.max(0, Math.min(1, val));
+els.fuel.style.transform = translateY(${100 - p * 100}%);
+if (els.fuelPercent) {
+els.fuelPercent.textContent = Math.round(p * 100) + '%';
 }
-.bar {
-width: 16px;
-height: 100px;
-border-radius: 6px;
-background: rgba(0, 0, 0, 0.3);
-overflow: hidden;
-display: flex;
-align-items: flex-end;
-border: 1px solid rgba(255, 255, 255, 0.1);
+};
+
+window.setHealth = (val) => {
+if (!els.health) return;
+const p = Math.max(0, Math.min(1, val));
+els.health.style.transform = translateY(${100 - p * 100}%);
+if (els.healthPercent) {
+els.healthPercent.textContent = Math.round(p * 100) + '%';
 }
-.bar.health .bar-fill { background: var(--health-color); }
-.bar.fuel .bar-fill { background: var(--fuel-color); }
-.bar-fill {
-width: 100%;
-height: 100%;
-transform: translateY(100%);
-transition: transform 0.4s ease-out;
+};
+
+const toggleIcon = (id, state) => {
+if (els.icons[id]) {
+els.icons[id].classList.toggle('active', !!state);
 }
-.bar-percentage {
-font-family: 'DS-Digital', sans-serif;
-font-size: 14px;
-color: var(--glow);
-text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-font-weight: normal;
+};
+
+const manageLoopingAudio = (audioEl, shouldPlay) => {
+if (!audioEl) return;
+if (shouldPlay && audioEl.paused) {
+audioEl.play().catch(e => {});
 }
-.center-panel {
-flex-grow: 1;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-height: 100%;
+else if (!shouldPlay && !audioEl.paused) {
+audioEl.pause();
+audioEl.currentTime = 0;
 }
-.speed-container {
-display: flex;
-align-items: baseline;
-gap: 8px;
+};
+
+// Modifikasi: setEngine akan me-reset status hasMoved
+window.setEngine = (on) => {
+const newState = !!on;
+if (vehicleState.engineOn === newState) return;
+
+code
+Code
+download
+content_copy
+expand_less
+vehicleState.engineOn = newState;
+toggleIcon('engine', vehicleState.engineOn);
+
+// Jika mesin dimatikan, reset status `hasMoved` dan tampilkan 'N'
+if (!newState) {
+    vehicleState.hasMoved = false;
+    window.setGear('N'); // Paksa tampilkan 'N'
+} else {
+    // Jika mesin baru dinyalakan, panggil `setGear` dengan gear saat ini (kemungkinan 0)
+    // Logika baru di `setGear` akan menampilkannya sebagai 'N' karena `hasMoved` masih false
+    window.setGear(0);
 }
-.speed-display {
-font-family: 'DS-Digital', sans-serif;
-font-size: 68px;
-font-weight: normal;
-line-height: 0.9;
-color: var(--glow);
-text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+
+};
+
+window.setSeatbelts = (isBuckled) => {
+toggleIcon('seatbelt', !!isBuckled);
+
+code
+Code
+download
+content_copy
+expand_less
+// Tambahkan logika untuk alarm:
+// Alarm hanya berbunyi jika sabuk pengaman tidak terpasang DAN mesin menyala.
+const shouldPlayAlarm = !isBuckled && vehicleState.engineOn;
+manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
+
+};
+
+// ... (kode Anda yang lain antara setSeatbelts dan setEngine)
+
+// Modifikasi: setEngine akan me-reset status hasMoved dan mengelola alarm
+window.setEngine = (on) => {
+const newState = !!on;
+if (vehicleState.engineOn === newState) return;
+
+code
+Code
+download
+content_copy
+expand_less
+vehicleState.engineOn = newState;
+toggleIcon('engine', vehicleState.engineOn);
+
+// Jika mesin dimatikan, reset status `hasMoved`, tampilkan 'N', dan matikan alarm
+if (!newState) {
+    vehicleState.hasMoved = false;
+    window.setGear('N'); // Paksa tampilkan 'N'
+    manageLoopingAudio(els.audio.alarm, false); // Hentikan alarm saat mesin mati
+} else {
+    // Jika mesin baru dinyalakan, panggil `setGear` dengan gear saat ini
+    window.setGear(0);
+    // Periksa status sabuk pengaman saat ini untuk menentukan apakah alarm harus diputar
+    const isSeatbeltBuckled = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
+    if (!isSeatbeltBuckled) {
+        manageLoopingAudio(els.audio.alarm, true);
+    }
 }
-/* --- PERUBAHAN DI SINI --- /
-.gear-display {
-font-family: 'DS-Digital', sans-serif;
-font-size: 28px; / Ukuran font diperkecil lagi */
-font-weight: normal;
-color: var(--glow);
-text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-transition: color 0.3s, text-shadow 0.3s;
+
+};
+
+window.setHeadlights = (level) => {
+const lights = els.icons.lights;
+if (!lights) return;
+lights.classList.remove('low-beam', 'high-beam');
+if (level === 1) {
+lights.classList.add('low-beam');
+} else if (level === 2) {
+lights.classList.add('high-beam');
 }
-.gear-display.gear-reverse {
-color: var(--reverse-color);
-text-shadow: 0 0 10px var(--reverse-color);
-}
-.speed-unit {
-font-size: 12px;
-font-weight: bold;
-opacity: 0.8;
-letter-spacing: 1px;
-margin-top: -4px;
-}
-.rpm-container { margin-top: 10px; }
-#rpm-boxes {
-display: grid;
-grid-template-columns: repeat(10, 1fr);
-gap: 3px;
-width: 165px;
-}
-.rpm-box {
-width: 100%;
-height: 7px;
-background: rgba(0, 0, 0, 0.3);
-border-radius: 2px;
-transition: all 0.2s;
-}
-.rpm-box.on { background: var(--glow); box-shadow: 0 0 8px rgba(255, 255, 255, 0.7); }
-.rpm-box.on:nth-child(n+7) { background: #ffae00; box-shadow: 0 0 8px #ffae00; }
-.rpm-box.on:nth-child(n+9) { background: #ff0000; box-shadow: 0 0 10px #ff0000; }
-.indicators {
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 12px;
-margin-top: 12px;
-}
-.icon img {
-width: 24px;
-height: 24px;
-object-fit: contain;
-transition: filter 0.3s;
-filter: brightness(0) invert(1) opacity(0.25);
-}
-#icon-right img { transform: scaleX(-1); }
-#icon-lights .high-beam-icon { display: none; }
-#icon-lights .low-beam-icon { display: block; }
-#icon-lights.low-beam .low-beam-icon { filter: brightness(0) invert(1) drop-shadow(0 0 8px var(--glow)); }
-#icon-lights.high-beam .low-beam-icon { display: none; }
-#icon-lights.high-beam .high-beam-icon {
-display: block;
-filter: invert(65%) sepia(85%) saturate(1519%) hue-rotate(170deg) brightness(101%) contrast(101%) drop-shadow(0 0 8px var(--high-beam-color));
-}
-.icon.active#icon-engine img,
-.icon.active#icon-seatbelt img,
-.icon.active#icon-left img,
-.icon.active#icon-right img {
-filter: invert(65%) sepia(85%) saturate(1519%) hue-rotate(170deg) brightness(101%) contrast(101%) drop-shadow(0 0 8px var(--active-blue-color));
-}
-.icon.active#icon-left img,
-.icon.active#icon-right img {
-animation: blinker 1s linear infinite;
-}
+};
+
+const updateIndicatorSound = () => {
+if (!els.icons.left || !els.icons.right) return;
+const leftOn = els.icons.left.classList.contains('active');
+const rightOn = els.icons.right.classList.contains('active');
+manageLoopingAudio(els.audio.tick, leftOn || rightOn);
+};
+
+window.setLeftIndicator = (on) => {
+toggleIcon('left', on);
+updateIndicatorSound();
+};
+
+window.setRightIndicator = (on) => {
+toggleIcon('right', on);
+updateIndicatorSound();
+};
+});
