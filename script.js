@@ -108,15 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // --- PERBAIKAN LOGIKA ALARM SABUK PENGAMAN ---
-  // Fungsi ini dipanggil dengan `true` jika sabuk TERPASANG, `false` jika TIDAK.
-  window.setSeatbelts = (isBuckled) => {
-    // Ikon 'active' (peringatan) hanya muncul jika isBuckled adalah 'false'.
-    const isWarningOn = !isBuckled;
-    toggleIcon('seatbelt', isWarningOn);
+  // --- PERBAIKAN LOGIKA SABUK PENGAMAN ---
+  // Fungsi ini dipanggil dengan `true` jika peringatan harus NYALA (tidak dipakai).
+  // Fungsi ini dipanggil dengan `false` jika peringatan harus MATI (dipakai).
+  window.setSeatbelts = (showWarning) => {
+    const isWarningActive = !!showWarning;
     
-    // Alarm berbunyi jika peringatan aktif DAN mesin menyala.
-    const shouldPlayAlarm = isWarningOn && vehicleState.engineOn;
+    // Langsung toggle ikon berdasarkan input
+    toggleIcon('seatbelt', isWarningActive);
+    
+    // Alarm berbunyi jika peringatan aktif DAN mesin menyala
+    const shouldPlayAlarm = isWarningActive && vehicleState.engineOn;
     manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
   };
   
@@ -130,10 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!newState) {
         vehicleState.hasMoved = false;
         window.setGear('N');
-        manageLoopingAudio(els.audio.alarm, false); // Matikan alarm saat mesin mati
+        manageLoopingAudio(els.audio.alarm, false);
     } else {
         window.setGear(0);
-        // Periksa kembali status sabuk pengaman saat mesin dinyalakan
         const isSeatbeltWarningOn = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
         if (isSeatbeltWarningOn) {
             manageLoopingAudio(els.audio.alarm, true);
@@ -161,12 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
     els.icons.left.classList.remove('is-blinking');
     els.icons.right.classList.remove('is-blinking');
 
-    if (leftActive && rightActive) { // Hazard
+    if (leftActive && rightActive) {
       els.icons.left.classList.add('is-blinking');
       els.icons.right.classList.add('is-blinking');
-    } else if (leftActive) { // Sein Kiri
+    } else if (leftActive) {
       els.icons.left.classList.add('is-blinking');
-    } else if (rightActive) { // Sein Kanan
+    } else if (rightActive) {
       els.icons.right.classList.add('is-blinking');
     }
 
