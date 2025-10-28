@@ -11,7 +11,6 @@
   --reverse-color: #ff3d3d;
   --active-blue-color: #00aeff;
   --seatbelt-warning-color: #ff3d3d;
-  --signal-color: #ffae00;
 }
 
 * {
@@ -182,7 +181,11 @@ body {
 }
 
 /* --- Indicator States --- */
-.icon.active#icon-engine img {
+
+/* PERBAIKAN: Aturan warna biru digabung untuk engine dan sein */
+.icon.active#icon-engine img,
+.icon.active#icon-left img,
+.icon.active#icon-right img {
   filter: invert(65%) sepia(85%) saturate(500%) hue-rotate(170deg) brightness(110%) contrast(101%) drop-shadow(0 0 6px var(--active-blue-color));
 }
 
@@ -203,17 +206,7 @@ body {
 #icon-lights .high-beam-icon { display: none; }
 #icon-lights .low-beam-icon { display: block; }
 
-
-/* --- PERBAIKAN LOGIKA ANIMASI SEIN --- */
-
-/* Aturan untuk memberi warna pada ikon sein KETIKA AKTIF */
-.icon.active#icon-left img,
-.icon.active#icon-right img {
-  filter: invert(80%) sepia(100%) saturate(400%) hue-rotate(5deg) brightness(110%) contrast(101%) drop-shadow(0 0 8px var(--signal-color));
-}
-
 /* Aturan untuk menjalankan animasi KETIKA AKTIF DAN MEMILIKI KELAS .is-blinking */
-/* Ini membuatnya lebih spesifik/kuat sehingga animasinya berjalan */
 .icon.active.is-blinking#icon-left img,
 .icon.active.is-blinking#icon-right img {
   animation: blinker 0.8s linear infinite;
@@ -221,6 +214,7 @@ body {
 
 @keyframes blinker { 
   50% { 
-    filter: invert(80%) sepia(100%) saturate(400%) hue-rotate(5deg) brightness(110%) contrast(101%) opacity(0.2);
+    /* PERBAIKAN: Animasi kedip juga menggunakan filter biru */
+    filter: invert(65%) sepia(85%) saturate(500%) hue-rotate(170deg) brightness(110%) contrast(101%) opacity(0.2);
   } 
 }
