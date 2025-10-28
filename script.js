@@ -21,10 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Menambahkan state `hasMoved` untuk melacak pergerakan
   const vehicleState = {
     engineOn: false,
-    hasMoved: false // Awalnya false
+    hasMoved: false
   };
 
   if (els.rpm) {
@@ -42,35 +41,28 @@ document.addEventListener('DOMContentLoaded', () => {
       window.setRPM = () => {};
   }
 
-  // Modifikasi: `setSpeed` sekarang juga akan mengubah state `hasMoved`
   window.setSpeed = (speed) => {
     if (!els.speed) return;
     const val = Math.round(Math.max(0, speed * 2.23694)); 
     els.speed.textContent = val;
 
-    // Jika kecepatan di atas 0, tandai bahwa mobil sudah bergerak
     if (val > 0) {
         vehicleState.hasMoved = true;
     }
   };
 
-  // Modifikasi: Logika penentuan gear yang baru
   window.setGear = (gear) => {
     if (!els.gear) return;
 
     let gearText;
-
     if (!vehicleState.engineOn) {
-        gearText = 'N'; // Jika mesin mati, selalu 'N'
+        gearText = 'N';
     } else {
-        // Logika baru saat mesin hidup
         if (gear > 0) {
-            gearText = gear; // Gear maju (1, 2, 3...)
+            gearText = gear;
         } else if (gear === 0 && vehicleState.hasMoved) {
-            // Gear 0 dan mobil sudah pernah bergerak = Mundur ('R')
             gearText = 'R';
         } else {
-            // Semua kondisi lain (termasuk gear 0 saat mobil belum bergerak) = Netral ('N')
             gearText = 'N';
         }
     }
@@ -78,11 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const upperGear = String(gearText).toUpperCase();
     els.gear.textContent = upperGear;
     
-    if (upperGear === 'R') {
-      els.gear.classList.add('gear-reverse');
-    } else {
-      els.gear.classList.remove('gear-reverse');
-    }
+    els.gear.classList.toggle('gear-reverse', upperGear === 'R');
   };
 
   window.setFuel = (val) => {
@@ -112,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const manageLoopingAudio = (audioEl, shouldPlay) => {
     if (!audioEl) return;
     if (shouldPlay && audioEl.paused) {
-      audioEl.play().catch(e => {});
+      audioEl.play().catch(e => console.error("Audio play failed:", e));
     } 
     else if (!shouldPlay && !audioEl.paused) {
       audioEl.pause();
@@ -120,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Modifikasi: `setEngine` akan me-reset status `hasMoved`
   window.setEngine = (on) => {
     const newState = !!on;
     if (vehicleState.engineOn === newState) return;
@@ -128,50 +115,22 @@ document.addEventListener('DOMContentLoaded', () => {
     vehicleState.engineOn = newState;
     toggleIcon('engine', vehicleState.engineOn);
     
-    // Jika mesin dimatikan, reset status `hasMoved` dan tampilkan 'N'
     if (!newState) {
         vehicleState.hasMoved = false;
-        window.setGear('N'); // Paksa tampilkan 'N'
+        window.setGear('N');
+        manageLoopingAudio(els.audio.alarm, false);
     } else {
-        // Jika mesin baru dinyalakan, panggil `setGear` dengan gear saat ini (kemungkinan 0)
-        // Logika baru di `setGear` akan menampilkannya sebagai 'N' karena `hasMoved` masih false
         window.setGear(0);
+        const isSeatbeltBuckled = els.icons.seatbelt && !els.icons.seatbelt.classList.contains('active');
+        manageLoopingAudio(els.audio.alarm, isSeatbeltBuckled);
     }
   };
 
- window.setSeatbelts = (isBuckled) => {
-    toggleIcon('seatbelt', !!isBuckled);
-    
-    // Tambahkan logika untuk alarm:
-    // Alarm hanya berbunyi jika sabuk pengaman tidak terpasang DAN mesin menyala.
-    const shouldPlayAlarm = !isBuckled && vehicleState.engineOn;
+  window.setSeatbelts = (isNotBuckled) => {
+    // Logika diubah: ikon 'active' berarti peringatan (tidak terpasang)
+    toggleIcon('seatbelt', !!isNotBuckled);
+    const shouldPlayAlarm = !!isNotBuckled && vehicleState.engineOn;
     manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
-  };
-
-  // ... (kode Anda yang lain antara setSeatbelts dan setEngine)
-
-  // Modifikasi: `setEngine` akan me-reset status `hasMoved` dan mengelola alarm
-  window.setEngine = (on) => {
-    const newState = !!on;
-    if (vehicleState.engineOn === newState) return;
-    
-    vehicleState.engineOn = newState;
-    toggleIcon('engine', vehicleState.engineOn);
-    
-    // Jika mesin dimatikan, reset status `hasMoved`, tampilkan 'N', dan matikan alarm
-    if (!newState) {
-        vehicleState.hasMoved = false;
-        window.setGear('N'); // Paksa tampilkan 'N'
-        manageLoopingAudio(els.audio.alarm, false); // Hentikan alarm saat mesin mati
-    } else {
-        // Jika mesin baru dinyalakan, panggil `setGear` dengan gear saat ini
-        window.setGear(0);
-        // Periksa status sabuk pengaman saat ini untuk menentukan apakah alarm harus diputar
-        const isSeatbeltBuckled = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
-        if (!isSeatbeltBuckled) {
-            manageLoopingAudio(els.audio.alarm, true);
-        }
-    }
   };
   
   window.setHeadlights = (level) => {
@@ -185,20 +144,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  const updateIndicatorSound = () => {
+  const updateIndicators = () => {
     if (!els.icons.left || !els.icons.right) return;
-    const leftOn = els.icons.left.classList.contains('active');
-    const rightOn = els.icons.right.classList.contains('active');
-    manageLoopingAudio(els.audio.tick, leftOn || rightOn);
+    
+    const leftActive = els.icons.left.classList.contains('active');
+    const rightActive = els.icons.right.classList.contains('active');
+    
+    // Hapus status kedip sebelumnya
+    els.icons.left.classList.remove('is-blinking');
+    els.icons.right.classList.remove('is-blinking');
+
+    if (leftActive && rightActive) {
+      // Mode Hazard: keduanya berkedip
+      els.icons.left.classList.add('is-blinking');
+      els.icons.right.classList.add('is-blinking');
+    } else if (leftActive) {
+      // Hanya kiri berkedip
+      els.icons.left.classList.add('is-blinking');
+    } else if (rightActive) {
+      // Hanya kanan berkedip
+      els.icons.right.classList.add('is-blinking');
+    }
+
+    // Putar suara jika salah satu atau keduanya aktif
+    manageLoopingAudio(els.audio.tick, leftActive || rightActive);
   };
 
   window.setLeftIndicator = (on) => {
     toggleIcon('left', on);
-    updateIndicatorSound();
+    updateIndicators();
   };
   
   window.setRightIndicator = (on) => {
     toggleIcon('right', on);
-    updateIndicatorSound();
+    updateIndicators();
   };
 });
