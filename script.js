@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setFuel = (val) => {
     if (!els.fuel) return;
     const p = Math.max(0, Math.min(1, val));
-    // PERBAIKAN: Menggunakan backtick (`) untuk template literal
     els.fuel.style.transform = `translateY(${100 - p * 100}%)`;
     if (els.fuelPercent) {
       els.fuelPercent.textContent = Math.round(p * 100) + '%';
@@ -86,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setHealth = (val) => {
     if (!els.health) return;
     const p = Math.max(0, Math.min(1, val));
-    // PERBAIKAN: Menggunakan backtick (`) untuk template literal
     els.health.style.transform = `translateY(${100 - p * 100}%)`;
     if (els.healthPercent) {
       els.healthPercent.textContent = Math.round(p * 100) + '%';
@@ -110,14 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  window.setSeatbelts = (isNotBuckled) => {
-    // Logika diubah: true berarti peringatan (tidak terpasang)
-    toggleIcon('seatbelt', !!isNotBuckled);
-    const shouldPlayAlarm = !!isNotBuckled && vehicleState.engineOn;
+  // --- PERBAIKAN LOGIKA ALARM SABUK PENGAMAN ---
+  // Fungsi ini dipanggil dengan `true` jika sabuk TERPASANG, `false` jika TIDAK.
+  window.setSeatbelts = (isBuckled) => {
+    // Ikon 'active' (peringatan) hanya muncul jika isBuckled adalah 'false'.
+    const isWarningOn = !isBuckled;
+    toggleIcon('seatbelt', isWarningOn);
+    
+    // Alarm berbunyi jika peringatan aktif DAN mesin menyala.
+    const shouldPlayAlarm = isWarningOn && vehicleState.engineOn;
     manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
   };
   
-  // PERBAIKAN: Hanya ada satu fungsi setEngine yang benar
   window.setEngine = (on) => {
     const newState = !!on;
     if (vehicleState.engineOn === newState) return;
@@ -128,9 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!newState) {
         vehicleState.hasMoved = false;
         window.setGear('N');
-        manageLoopingAudio(els.audio.alarm, false);
+        manageLoopingAudio(els.audio.alarm, false); // Matikan alarm saat mesin mati
     } else {
         window.setGear(0);
+        // Periksa kembali status sabuk pengaman saat mesin dinyalakan
         const isSeatbeltWarningOn = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
         if (isSeatbeltWarningOn) {
             manageLoopingAudio(els.audio.alarm, true);
@@ -149,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // PERBAIKAN: Mengganti logika lama dengan yang baru untuk sein sinkron
   const updateIndicators = () => {
     if (!els.icons.left || !els.icons.right) return;
     
@@ -159,12 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
     els.icons.left.classList.remove('is-blinking');
     els.icons.right.classList.remove('is-blinking');
 
-    if (leftActive && rightActive) {
+    if (leftActive && rightActive) { // Hazard
       els.icons.left.classList.add('is-blinking');
       els.icons.right.classList.add('is-blinking');
-    } else if (leftActive) {
+    } else if (leftActive) { // Sein Kiri
       els.icons.left.classList.add('is-blinking');
-    } else if (rightActive) {
+    } else if (rightActive) { // Sein Kanan
       els.icons.right.classList.add('is-blinking');
     }
 
