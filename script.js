@@ -108,17 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // --- PERBAIKAN LOGIKA SABUK PENGAMAN ---
-  // Fungsi ini dipanggil dengan `true` jika peringatan harus NYALA (tidak dipakai).
-  // Fungsi ini dipanggil dengan `false` jika peringatan harus MATI (dipakai).
-  window.setSeatbelts = (showWarning) => {
-    const isWarningActive = !!showWarning;
+  // --- PERBAIKAN LOGIKA SABUK PENGAMAN (VISUAL & AUDIO TERPISAH) ---
+  // Fungsi ini dipanggil dengan `true` jika sabuk DIPAKAI, `false` jika TIDAK.
+  window.setSeatbelts = (isBuckled) => {
+    const isWearingBelt = !!isBuckled;
     
-    // Langsung toggle ikon berdasarkan input
-    toggleIcon('seatbelt', isWarningActive);
+    // 1. Logika Visual: Ikon menyala jika sabuk DIPAKAI.
+    toggleIcon('seatbelt', isWearingBelt);
     
-    // Alarm berbunyi jika peringatan aktif DAN mesin menyala
-    const shouldPlayAlarm = isWarningActive && vehicleState.engineOn;
+    // 2. Logika Audio: Alarm berbunyi jika sabuk TIDAK DIPAKAI dan mesin menyala.
+    const shouldPlayAlarm = !isWearingBelt && vehicleState.engineOn;
     manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
   };
   
@@ -135,8 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
         manageLoopingAudio(els.audio.alarm, false);
     } else {
         window.setGear(0);
-        const isSeatbeltWarningOn = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
-        if (isSeatbeltWarningOn) {
+        // Periksa kembali status sabuk pengaman saat mesin dinyalakan.
+        // Jika ikon seatbelt TIDAK aktif (artinya tidak dipakai), bunyikan alarm.
+        const isSeatbeltIconOff = els.icons.seatbelt && !els.icons.seatbelt.classList.contains('active');
+        if (isSeatbeltIconOff) {
             manageLoopingAudio(els.audio.alarm, true);
         }
     }
