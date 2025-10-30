@@ -10,7 +10,6 @@
   --high-beam-color: #00aeff;
   --reverse-color: #ff3d3d;
   --active-blue-color: #00aeff;
-  /* Variabel seatbelt-warning-color tidak lagi diperlukan */
 }
 
 * {
@@ -102,7 +101,12 @@ body {
   justify-content: space-between;
   align-items: center;
   height: 100%;
-  padding: 8px 0;
+}
+
+.speed-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .speed-container {
@@ -137,7 +141,12 @@ body {
   font-weight: bold;
   color: var(--off);
   letter-spacing: 1px;
-  margin-top: -4px;
+  margin-top: -8px; /* Disesuaikan sedikit */
+}
+
+.rpm-container {
+  width: 100%;
+  max-width: 170px;
 }
 
 #rpm-boxes {
@@ -145,7 +154,6 @@ body {
   grid-template-columns: repeat(10, 1fr);
   gap: 3px;
   width: 100%;
-  max-width: 170px;
 }
 
 .rpm-box {
@@ -180,9 +188,6 @@ body {
   transform: scaleX(-1);
 }
 
-/* --- Indicator States --- */
-
-/* PERBAIKAN: Aturan warna biru sekarang berlaku untuk SEMUA ikon aktif */
 .icon.active#icon-engine img,
 .icon.active#icon-left img,
 .icon.active#icon-right img,
@@ -203,7 +208,6 @@ body {
 #icon-lights .high-beam-icon { display: none; }
 #icon-lights .low-beam-icon { display: block; }
 
-/* Aturan untuk menjalankan animasi sein */
 .icon.active.is-blinking#icon-left img,
 .icon.active.is-blinking#icon-right img {
   animation: blinker 0.8s linear infinite;
