@@ -24,24 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const vehicleState = {
     engineOn: false,
     hasMoved: false,
-    isMotorcycle: false // Defaultnya adalah mobil
+    isMotorcycle: false 
   };
 
-  /**
-   * Mengatur jenis kendaraan. 'motorcycle' akan menonaktifkan fitur sabuk pengaman.
-   * Jenis lainnya akan dianggap sebagai mobil.
-   */
   window.setVehicleType = (type) => {
     vehicleState.isMotorcycle = type === 'motorcycle';
 
     if (els.icons.seatbelt) {
       if (vehicleState.isMotorcycle) {
-        // Jika motor, sembunyikan ikon dan matikan alarm
         els.icons.seatbelt.style.display = 'none';
         manageLoopingAudio(els.audio.alarm, false); 
       } else {
-        // Jika mobil, tampilkan kembali ikonnya
-        els.icons.seatbelt.style.display = ''; // Menghapus style 'display' agar kembali ke default CSS
+        els.icons.seatbelt.style.display = '';
       }
     }
   };
@@ -129,15 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   window.setSeatbelts = (isBuckled) => {
-    // Jika kendaraan adalah motor, abaikan semua fungsi sabuk pengaman
     if (vehicleState.isMotorcycle) {
       return;
     }
     
     const isWearingBelt = !!isBuckled;
-    toggleIcon('seatbelt', !isWearingBelt); // Ikon aktif jika TIDAK dipakai
+    // DIPERBAIKI: Ikon menyala jika sabuk terpasang (isWearingBelt adalah true)
+    toggleIcon('seatbelt', isWearingBelt); 
     
-    // Alarm hanya berbunyi jika mesin menyala DAN sabuk tidak terpasang
     const shouldPlayAlarm = !isWearingBelt && vehicleState.engineOn;
     manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
   };
@@ -150,18 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleIcon('engine', vehicleState.engineOn);
     
     if (!newState) {
-        // Jika mesin mati
         vehicleState.hasMoved = false;
         window.setGear('N');
-        manageLoopingAudio(els.audio.alarm, false); // Selalu matikan alarm saat mesin mati
+        manageLoopingAudio(els.audio.alarm, false);
     } else {
-        // Jika mesin baru menyala
         window.setGear(0);
 
-        // Untuk mobil, periksa status sabuk pengaman saat mesin menyala
         if (!vehicleState.isMotorcycle) {
+            // DIPERBAIKI: Periksa jika ikon TIDAK aktif (belt belum terpasang) untuk menyalakan alarm
             const isSeatbeltIconActive = els.icons.seatbelt && els.icons.seatbelt.classList.contains('active');
-            if (isSeatbeltIconActive) { // Jika ikon aktif (artinya belt belum terpasang)
+            if (!isSeatbeltIconActive) { 
                 manageLoopingAudio(els.audio.alarm, true);
             }
         }
