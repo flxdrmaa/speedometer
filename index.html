@@ -16,7 +16,6 @@
         <div class="bar health">
           <div class="bar-fill" id="health-bar"></div>
         </div>
-        <!-- Persentase dipindahkan ke sini -->
         <div class="bar-percentage" id="health-percent">100%</div>
       </div>
       <div class="bar-container">
@@ -24,21 +23,27 @@
         <div class="bar fuel">
           <div class="bar-fill" id="fuel-bar"></div>
         </div>
-        <!-- Persentase dipindahkan ke sini -->
         <div class="bar-percentage" id="fuel-percent">100%</div>
       </div>
     </div>
 
     <!-- Center Panel -->
     <div class="center-panel">
-      <div class="speed-container">
-        <div class="speed-display" id="speed-display">0</div>
-        <div class="gear-display" id="gear-display">N</div>
+      <!-- Grup Kecepatan & Gear -->
+      <div class="speed-group">
+        <div class="speed-container">
+          <div class="speed-display" id="speed-display">0</div>
+          <div class="gear-display" id="gear-display">N</div>
+        </div>
+        <div class="speed-unit" id="speed-unit">MPH</div> 
       </div>
-      <div class="speed-unit" id="speed-unit">MPH</div> 
+      
+      <!-- RPM Container (Yang Diperbaiki/Ditambahkan Kembali) -->
       <div class="rpm-container">
         <div id="rpm-boxes"></div>
       </div>
+
+      <!-- Indikator Ikon -->
       <div class="indicators">
         <div class="icon indicator" id="icon-left" title="Left Signal">
           <img src="https://img.icons8.com/pulsar-line/50/circled-left-2.png" alt="Left Signal"/>
