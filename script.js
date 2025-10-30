@@ -108,15 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // --- PERBAIKAN LOGIKA SABUK PENGAMAN (VISUAL & AUDIO TERPISAH) ---
-  // Fungsi ini dipanggil dengan `true` jika sabuk DIPAKAI, `false` jika TIDAK.
   window.setSeatbelts = (isBuckled) => {
     const isWearingBelt = !!isBuckled;
     
-    // 1. Logika Visual: Ikon menyala jika sabuk DIPAKAI.
     toggleIcon('seatbelt', isWearingBelt);
     
-    // 2. Logika Audio: Alarm berbunyi jika sabuk TIDAK DIPAKAI dan mesin menyala.
     const shouldPlayAlarm = !isWearingBelt && vehicleState.engineOn;
     manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
   };
@@ -134,8 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
         manageLoopingAudio(els.audio.alarm, false);
     } else {
         window.setGear(0);
-        // Periksa kembali status sabuk pengaman saat mesin dinyalakan.
-        // Jika ikon seatbelt TIDAK aktif (artinya tidak dipakai), bunyikan alarm.
         const isSeatbeltIconOff = els.icons.seatbelt && !els.icons.seatbelt.classList.contains('active');
         if (isSeatbeltIconOff) {
             manageLoopingAudio(els.audio.alarm, true);
